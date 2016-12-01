@@ -28,20 +28,21 @@ In order to use
 
 
 ## Usage
-The application should be reachable from your browser at `http://localhost:5000/` once the Vagrant box is running.  There are 3 users built into the application for testing:
+The application should be reachable from your browser at `http://localhost:5000/` once the Vagrant box is running.  There are 4 users built into the application for testing and all use the password `password`:
 
 - user1
 - user2
 - user3
 - user4
 
-All users have the password `password`
-
 
 ## TODO
 
-- [ ] clean up
-- [ ] fix date bug
+- [x] clean up
 - [ ] fix UUID bug
+- [ ] consolidate custom JS
+- [ ] fix date bug
 - [ ] resources available NOW when not bug
+- [ ] totals at bottom of resource report
+- [x] change name of schema to erms
 - [x] ensure deploy and start

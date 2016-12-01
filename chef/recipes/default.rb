@@ -23,18 +23,18 @@ end
 
 # create main database
 execute "create main db" do
-    command "mysql -h 127.0.0.1 -u root --password='password' -e 'CREATE DATABASE IF NOT EXISTS emergency_response_system'"
+    command "mysql -h 127.0.0.1 -u root --password='password' -e 'CREATE DATABASE IF NOT EXISTS erms'"
 end
 
 # run creation script on database
 execute 'run creation script' do
-    command "mysql -h 127.0.0.1 -u root --password='password' emergency_response_system" +
+    command "mysql -h 127.0.0.1 -u root --password='password' erms" +
         " < /home/gatech/resource-management-system/src/sql/creation_script.sql"
 end
 
 # run creation script on database
 execute 'run creation script' do
-    command "mysql -h 127.0.0.1 -u root --password='password' emergency_response_system" +
+    command "mysql -h 127.0.0.1 -u root --password='password' erms" +
         " < /home/gatech/resource-management-system/src/sql/insert_statements_script.sql"
 end
 

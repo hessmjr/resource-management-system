@@ -39,7 +39,6 @@ def query_db(query):
 def commit_db(query):
     """
     Commits the new, unsaved changes
-    :return:
     """
     db = get_db()
     db.cursor.execute(query)

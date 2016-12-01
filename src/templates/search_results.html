@@ -63,7 +63,7 @@
                 <!-- Can request resources that don't belong to current user -->
                 {% if username != result[8] %}
 
-                  <a href="/resource/request?resource-id={{ result[0] }}&incident-id={{ incident[0] }}">
+                  <a href="/search-resources/request?resource-id={{ result[0] }}&incident-id={{ incident[0] }}">
                     <button class="btn-floating waves-effect waves-light" title="Request"  type="button">
                       <i class="material-icons">ring_volume</i>
                     </button>
@@ -72,13 +72,13 @@
                 {% endif %}
                 {% if username == result[8] %}
 
-                  <a href="/resource/deploy?resource-id={{ result[0] }}&incident-id={{ incident[0] }}">
+                  <a href="/search-resources/deploy?resource-id={{ result[0] }}&incident-id={{ incident[0] }}">
                     <button class="btn-floating waves-effect waves-light" title="Deploy"  type="button">
                       <i class="material-icons">launch</i>
                     </button>
                   </a>
 
-                  <a href="/resource/repair?resource-id={{ result[0] }}">
+                  <a href="/search-resources/repair?resource-id={{ result[0] }}">
                     <button class="btn-floating waves-effect waves-light" title="Repair"  type="button">
                       <i class="material-icons">settings</i>
                     </button>

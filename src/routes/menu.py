@@ -31,6 +31,9 @@ def menu_route():
 
 
 def get_user_details_query(username):
+    """
+    Creates SQL for getting user details
+    """
     t = Template("""
         SELECT
             user.name, company.headquarters, government_agency.jurisdiction,

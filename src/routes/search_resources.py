@@ -84,7 +84,7 @@ def search_resources_route(error=None):
         # if all 3 params were given
         elif len(keyword) > 0 and len(esf_id) > 0 and len(inc_id) > 0:
             incident = query_db(get_incident_sql(inc_id))[0]
-            results = query_db(search_all_sql(keyword, esf_id, inc_id, distance))
+            results = query_db(all_sql(keyword, esf_id, inc_id, distance))
 
         # if none of the params were given
         else:
@@ -127,9 +127,9 @@ def get_incidents_sql(username):
     Builds sql for querying all incidents
     """
     t = Template("""
-        SELECT `incident`.`incident_id`, `incident`.`description`
-        FROM `incident`
-        WHERE `incident`.`username` = '$username'
+        SELECT incident.incident_id, incident.description
+        FROM incident
+        WHERE incident.username = '$username'
     """)
 
     return t.substitute({'username': username})
@@ -140,32 +140,27 @@ def no_criteria_sql():
     Builds sql query search for no criteria
     """
     t = Template("""
-        SELECT DISTINCT
-        `resource`.`resource_id`,
-        `resource`.`name`,
-        `user`.`name`,
-        `resource`.`amount`,
-        `cost_time_period`.`time_period`,
-        `requests`.`request_status`,
-        `requests`.`return_by_date`
-        FROM `resource`
-        JOIN `user`
-        ON `resource`.`username` = `user`.`username`
-        JOIN `cost_time_period`
-        ON `cost_time_period`.`cost_time_period_id` =
-            `resource`.`cost_time_period_id`
+        SELECT DISTINCT resource.resource_id, resource.name, user.name,
+            resource.amount, cost_time_period.time_period,
+            requests.request_status, requests.return_by_date
+        FROM resource
+        JOIN user
+            ON resource.username = user.username
+        JOIN cost_time_period
+            ON cost_time_period.cost_time_period_id =
+                resource.cost_time_period_id
         LEFT JOIN
-        (SELECT resource_id, return_by_date,
-            CASE
-                WHEN status = 'Deployed' THEN 'Not Available'
-                ELSE 'Available'
-            END AS request_status
-        FROM resource_request
-                JOIN resource_request_status
+            (SELECT resource_id, return_by_date,
+                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                    ELSE 'Available'
+                END AS request_status
+            FROM resource_request
+            JOIN resource_request_status
                 ON resource_request_status.resource_request_status_id =
                     resource_request.resource_request_status_id
-                GROUP BY resource_id
-          ) requests ON requests.resource_id = resource.resource_id
+            GROUP BY resource_id
+            ) requests
+            ON requests.resource_id = resource.resource_id
     """)
 
     return t.substitute()
@@ -176,37 +171,32 @@ def keyword_sql(keyword):
     Builds sql query search for keyword only
     """
     t = Template("""
-        SELECT DISTINCT
-        `resource`.`resource_id`,
-        `resource`.`name`,
-        `user`.`name`,
-        `resource`.`amount`,
-        `cost_time_period`.`time_period`,
-        `requests`.`request_status`,
-        `requests`.`return_by_date`
-        FROM `resource`
-        LEFT JOIN `capability`
-        ON `resource`.`resource_id` = `capability`.`resource_id`
-        JOIN `user`
-        ON `resource`.`username` = `user`.`username`
-        JOIN `cost_time_period`
-        ON `cost_time_period`.`cost_time_period_id` =
-            `resource`.`cost_time_period_id`
+        SELECT DISTINCT resource.resource_id, resource.name, user.name,
+            resource.amount, cost_time_period.time_period,
+            requests.request_status, requests.return_by_date
+        FROM resource
+        LEFT JOIN capability
+            ON resource.resource_id = capability.resource_id
+        JOIN user
+            ON resource.username = user.username
+        JOIN cost_time_period
+        ON cost_time_period.cost_time_period_id =
+            resource.cost_time_period_id
         LEFT JOIN
-        (SELECT resource_id, return_by_date,
-            CASE
-                WHEN status = 'Deployed' THEN 'Not Available'
-                ELSE 'Available'
-            END AS request_status
-        FROM resource_request
-                JOIN resource_request_status
+            (SELECT resource_id, return_by_date,
+                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                    ELSE 'Available'
+                END AS request_status
+            FROM resource_request
+            JOIN resource_request_status
                 ON resource_request_status.resource_request_status_id =
                     resource_request.resource_request_status_id
-                GROUP BY resource_id
-          ) requests ON requests.resource_id = resource.resource_id
-        WHERE `resource`.`name` LIKE '%${keyword}%' OR
-            `resource`.model LIKE '%${keyword}%' OR
-            `capability`.`capability` LIKE '%${keyword}%'
+            GROUP BY resource_id
+            ) requests
+                ON requests.resource_id = resource.resource_id
+        WHERE resource.name LIKE '%${keyword}%' OR
+            resource.model LIKE '%${keyword}%' OR
+            capability.capability LIKE '%${keyword}%'
         ORDER BY requests.request_status, resource.name
     """)
     return t.substitute({'keyword': keyword})
@@ -219,41 +209,37 @@ def incident_sql(incident_id, distance):
     distance = convert_distance(distance)
 
     t = Template("""
-        SELECT DISTINCT
-        `resource`.`resource_id`,
-        `resource`.`name`,
-        `user`.`name`,
-        `resource`.`amount`,
-        `cost_time_period`.`time_period`,
-        `requests`.`request_status`,
-        `requests`.`return_by_date`,
-        distance_formula(`resource`.`latitude`, `resource`.`longitude`,`incident_info`.`latitude`, `incident_info`.`longitude`) AS `distance`,
-        `resource`.`username`
-        FROM `resource`
-        JOIN `user`
-        ON `resource`.`username` = `user`.`username`
-        JOIN `cost_time_period`
-        ON `cost_time_period`.`cost_time_period_id` =
-            `resource`.`cost_time_period_id`
+        SELECT DISTINCT resource.resource_id, resource.name, user.name,
+            resource.amount, cost_time_period.time_period,
+            requests.request_status, requests.return_by_date,
+            distance_formula(resource.latitude, resource.longitude,
+                incident_info.latitude, incident_info.longitude) AS distance,
+            resource.username
+        FROM resource
+        JOIN user
+            ON resource.username = user.username
+        JOIN cost_time_period
+            ON cost_time_period.cost_time_period_id =
+                resource.cost_time_period_id
         LEFT JOIN
-        (SELECT resource_id, return_by_date,
-            CASE
-                WHEN status = 'Deployed' THEN 'Not Available'
-                ELSE 'Available'
-            END AS request_status
-        FROM
-            resource_request
-                JOIN resource_request_status
-                ON resource_request_status.resource_request_status_id = resource_request.resource_request_status_id
-                GROUP BY resource_id
-          ) requests ON requests.resource_id = resource.resource_id
+            (SELECT resource_id, return_by_date,
+                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                    ELSE 'Available'
+                END AS request_status
+            FROM resource_request
+            JOIN resource_request_status
+                ON resource_request_status.resource_request_status_id =
+                    resource_request.resource_request_status_id
+            GROUP BY resource_id
+            ) requests
+                ON requests.resource_id = resource.resource_id
         CROSS JOIN
-            (SELECT `incident_id`, `latitude`, `longitude`
-            FROM `incident`
-            WHERE `incident_id` = $incident_id) `incident_info`
-        WHERE distance_formula(`resource`.`latitude`, `resource`.`longitude`,
-            `incident_info`.`latitude`, `incident_info`.`longitude`) < $distance
-        ORDER BY distance ASC, `requests`.`request_status`, resource.name
+            (SELECT incident_id, latitude, longitude
+            FROM incident
+            WHERE incident_id = $incident_id) incident_info
+        WHERE distance_formula(resource.latitude, resource.longitude,
+            incident_info.latitude, incident_info.longitude) < $distance
+        ORDER BY distance ASC, requests.request_status, resource.name
     """)
 
     return t.substitute({'incident_id': incident_id, 'distance': distance})
@@ -264,37 +250,32 @@ def esf_sql(esf_id):
     Builds sql query search for esf only
     """
     t = Template("""
-        SELECT DISTINCT
-        `resource`.`resource_id`,
-        `resource`.`name`,
-        `user`.`name`,
-        `resource`.`amount`,
-        `cost_time_period`.`time_period`,
-        `requests`.`request_status`,
-        `requests`.`return_by_date`
-        FROM `resource`
-        LEFT JOIN `resource_esf`
-        ON `resource`.`resource_id` = `resource_esf`.`resource_id`
-        JOIN `user`
-        ON `resource`.username = user.username
-        JOIN `cost_time_period`
-        ON `cost_time_period`.`cost_time_period_id` =
-            `resource`.`cost_time_period_id`
+        SELECT DISTINCT resource.resource_id, resource.name, user.name,
+            resource.amount, cost_time_period.time_period,
+            requests.request_status, requests.return_by_date
+        FROM resource
+        LEFT JOIN resource_esf
+            ON resource.resource_id = resource_esf.resource_id
+        JOIN user
+            ON resource.username = user.username
+        JOIN cost_time_period
+            ON cost_time_period.cost_time_period_id =
+                resource.cost_time_period_id
         LEFT JOIN
-        (SELECT resource_id, return_by_date,
-            CASE
-                WHEN status = 'Deployed' THEN 'Not Available'
-                ELSE 'Available'
-            END AS request_status
-        FROM
-            resource_request
-                JOIN resource_request_status
-                ON resource_request_status.resource_request_status_id = resource_request.resource_request_status_id
-                GROUP BY resource_id
-          ) requests ON requests.resource_id = resource.resource_id
-        WHERE `resource_esf`.`esf_id` = $esf_id OR
-            `resource`.`primary_esf_id` = $esf_id
-        ORDER BY `requests`.`request_status`, resource.name
+            (SELECT resource_id, return_by_date,
+                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                    ELSE 'Available'
+                END AS request_status
+            FROM resource_request
+            JOIN resource_request_status
+                ON resource_request_status.resource_request_status_id =
+                    resource_request.resource_request_status_id
+            GROUP BY resource_id
+            ) requests
+                ON requests.resource_id = resource.resource_id
+        WHERE resource_esf.esf_id = $esf_id OR
+            resource.primary_esf_id = $esf_id
+        ORDER BY requests.request_status, resource.name
     """)
 
     return t.substitute({'esf_id': esf_id})
@@ -305,41 +286,36 @@ def keyword_esf_sql(keyword, esf_id):
     Builds sql query search for keywords and esfs
     """
     t = Template("""
-        SELECT DISTINCT
-        `resource`.`resource_id`,
-        `resource`.`name`,
-        `user`.`name`, `resource`.`amount`,
-        `cost_time_period`.`time_period`,
-        `requests`.`request_status`,
-        `requests`.`return_by_date`
-        FROM `resource`
-        LEFT JOIN `capability`
-        ON `resource`.`resource_id` = `capability`.`resource_id`
-        LEFT JOIN `resource_esf`
-        ON `resource`.`resource_id` = `resource_esf`.`resource_id`
-        JOIN `user`
-        ON `resource`.`username` = `user`.`username`
-        JOIN `cost_time_period`
-        ON `cost_time_period`.`cost_time_period_id` =
-            `resource`.`cost_time_period_id`
+        SELECT DISTINCT resource.resource_id, resource.name, user.name,
+            resource.amount, cost_time_period.time_period,
+            requests.request_status, requests.return_by_date
+        FROM resource
+        LEFT JOIN capability
+            ON resource.resource_id = capability.resource_id
+        LEFT JOIN resource_esf
+            ON resource.resource_id = resource_esf.resource_id
+        JOIN user
+            ON resource.username = user.username
+        JOIN cost_time_period
+            ON cost_time_period.cost_time_period_id =
+                resource.cost_time_period_id
         LEFT JOIN
-        (SELECT resource_id, return_by_date,
-            CASE
-                WHEN status = 'Deployed' THEN 'Not Available'
-                ELSE 'Available'
-            END AS request_status
-        FROM
-            resource_request
-                JOIN resource_request_status
-                ON resource_request_status.resource_request_status_id = resource_request.resource_request_status_id
-                GROUP BY resource_id
-          ) requests ON requests.resource_id = resource.resource_id
-        WHERE (`resource`.`name` LIKE '%${keyword}%' OR
-            `resource`.`model` LIKE '%${keyword}%' OR
-            `capability`.`capability` LIKE '%${keyword}%') AND
-            (`resource_esf`.`esf_id` = $esf_id OR
-            `resource`.`primary_esf_id` = $esf_id)
-        ORDER BY `requests`.`request_status`, resource.name
+            (SELECT resource_id, return_by_date,
+                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                    ELSE 'Available'
+                END AS request_status
+            FROM resource_request
+            JOIN resource_request_status
+                ON resource_request_status.resource_request_status_id =
+                    resource_request.resource_request_status_id
+            GROUP BY resource_id
+            ) requests
+                ON requests.resource_id = resource.resource_id
+        WHERE (resource.name LIKE '%${keyword}%' OR
+            resource.model LIKE '%${keyword}%' OR
+            capability.capability LIKE '%${keyword}%') AND
+            (resource_esf.esf_id = $esf_id OR resource.primary_esf_id = $esf_id)
+        ORDER BY requests.request_status, resource.name
     """)
 
     return t.substitute({'keyword': keyword, 'esf_id': esf_id})
@@ -352,49 +328,43 @@ def incident_esf_sql(esf_id, incident_id, distance):
     distance = convert_distance(distance)
 
     t = Template("""
-        SELECT DISTINCT
-        `resource`.`resource_id`,
-        `resource`.`name`,
-        `user`.`name`,
-        `resource`.`amount`,
-        `cost_time_period`.`time_period`,
-        `requests`.`request_status`,
-        `requests`.`return_by_date`,
-        distance_formula(`resource`.`latitude`, `resource`.`longitude`,
-            `incident_info`.`latitude`, `incident_info`.`longitude`)
-            AS `distance`,
-        `resource`.`username`
-        FROM `resource`
-        LEFT JOIN `incident`
-        ON `resource`.`username` = `incident`.`username`
-        LEFT JOIN `resource_esf`
-        ON `resource`.`resource_id` = `resource_esf`.`resource_id`
-        JOIN `user`
-        ON `resource`.`username` = `user`.`username`
-        JOIN `cost_time_period`
-        ON `cost_time_period`.`cost_time_period_id` =
-            `resource`.`cost_time_period_id`
+        SELECT DISTINCT resource.resource_id, resource.name, user.name,
+            resource.amount, cost_time_period.time_period,
+            requests.request_status, requests.return_by_date,
+            distance_formula(resource.latitude, resource.longitude,
+                incident_info.latitude, incident_info.longitude) AS distance,
+            resource.username
+        FROM resource
+        LEFT JOIN incident
+            ON resource.username = incident.username
+        LEFT JOIN resource_esf
+            ON resource.resource_id = resource_esf.resource_id
+        JOIN user
+            ON resource.username = user.username
+        JOIN cost_time_period
+            ON cost_time_period.cost_time_period_id =
+                resource.cost_time_period_id
         LEFT JOIN
-        (SELECT resource_id, return_by_date,
-            CASE
-                WHEN status = 'Deployed' THEN 'Not Available'
-                ELSE 'Available'
-            END AS request_status
-        FROM
-            resource_request
-                JOIN resource_request_status
-                ON resource_request_status.resource_request_status_id = resource_request.resource_request_status_id
-                GROUP BY resource_id
-          ) requests ON requests.resource_id = resource.resource_id
+            (SELECT resource_id, return_by_date,
+                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                    ELSE 'Available'
+                END AS request_status
+            FROM resource_request
+            JOIN resource_request_status
+                ON resource_request_status.resource_request_status_id =
+                    resource_request.resource_request_status_id
+            GROUP BY resource_id
+            ) requests
+        ON requests.resource_id = resource.resource_id
         CROSS JOIN
-            (SELECT `incident_id`, `latitude`, `longitude`
-            FROM `incident`
-            WHERE `incident_id` = $incident_id) `incident_info`
-        WHERE distance_formula(`resource`.`latitude`, `resource`.`longitude`,
-            `incident_info`.`latitude`, `incident_info`.`longitude`) < $distance
-            AND (`resource_esf`.`esf_id` = $esf_id OR
-            `resource`.`primary_esf_id` = $esf_id)
-        ORDER BY distance ASC, `requests`.`request_status`, resource.name
+            (SELECT incident_id, latitude, longitude
+            FROM incident
+            WHERE incident_id = $incident_id) incident_info
+        WHERE distance_formula(resource.latitude, resource.longitude,
+            incident_info.latitude, incident_info.longitude) < $distance
+            AND (resource_esf.esf_id = $esf_id OR
+            resource.primary_esf_id = $esf_id)
+        ORDER BY distance ASC, requests.request_status, resource.name
     """)
 
     return t.substitute({'incident_id': incident_id, 'distance': distance,
@@ -408,111 +378,99 @@ def keyword_incident_sql(keyword, incident_id, distance):
     distance = convert_distance(distance)
 
     t = Template("""
-        SELECT DISTINCT
-        `resource`.`resource_id`,
-        `resource`.`name`,
-        `user`.`name`,
-        `resource`.`amount`,
-        `cost_time_period`.`time_period`,
-        `requests`.`request_status`,
-        `requests`.`return_by_date`,
-        distance_formula(`resource`.`latitude`, `resource`.`longitude`,
-            `incident_info`.`latitude`, `incident_info`.`longitude`)
-            AS `distance`,
-        `resource`.`username`
-        FROM `resource`
-        LEFT JOIN `incident`
-        ON `resource`.`username` = `incident`.`username`
-        LEFT JOIN `capability`
-        ON `resource`.`resource_id` = `capability`.`resource_id`
-        JOIN `user`
-        ON `resource`.`username` = `user`.`username`
-        JOIN `cost_time_period`
-        ON `cost_time_period`.`cost_time_period_id` =
-            `resource`.`cost_time_period_id`
+        SELECT DISTINCT resource.resource_id, resource.name, user.name,
+            resource.amount, cost_time_period.time_period,
+            requests.request_status, requests.return_by_date,
+            distance_formula(resource.latitude, resource.longitude,
+                incident_info.latitude, incident_info.longitude) AS distance,
+            resource.username
+        FROM resource
+        LEFT JOIN incident
+            ON resource.username = incident.username
+        LEFT JOIN capability
+            ON resource.resource_id = capability.resource_id
+        JOIN user
+            ON resource.username = user.username
+        JOIN cost_time_period
+            ON cost_time_period.cost_time_period_id =
+                resource.cost_time_period_id
         LEFT JOIN
-        (SELECT resource_id, return_by_date,
-            CASE
-                WHEN status = 'Deployed' THEN 'Not Available'
-                ELSE 'Available'
-            END AS request_status
-        FROM
-            resource_request
-                JOIN resource_request_status
-                ON resource_request_status.resource_request_status_id = resource_request.resource_request_status_id
-                GROUP BY resource_id
-          ) requests ON requests.resource_id = resource.resource_id
+            (SELECT resource_id, return_by_date,
+                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                    ELSE 'Available'
+                END AS request_status
+            FROM resource_request
+            JOIN resource_request_status
+                ON resource_request_status.resource_request_status_id =
+                    resource_request.resource_request_status_id
+            GROUP BY resource_id
+            ) requests
+                ON requests.resource_id = resource.resource_id
         CROSS JOIN
-            (SELECT `incident_id`, `latitude`, `longitude`
-            FROM `incident`
-            WHERE `incident_id` = $incident_id) `incident_info`
-        WHERE distance_formula(`resource`.`latitude`, `resource`.`longitude`,
-            `incident_info`.`latitude`, `incident_info`.`longitude`) < $distance
-            AND (`resource`.`name` LIKE '%${keyword}%' OR
-            `resource`.model LIKE '%${keyword}%' OR
-            `capability`.`capability` LIKE '%${keyword}%')
-        ORDER BY distance ASC, `requests`.`request_status`, resource.name
+            (SELECT incident_id, latitude, longitude
+            FROM incident
+            WHERE incident_id = $incident_id) incident_info
+        WHERE distance_formula(resource.latitude, resource.longitude,
+            incident_info.latitude, incident_info.longitude) < $distance
+            AND (resource.name LIKE '%${keyword}%' OR
+            resource.model LIKE '%${keyword}%' OR
+            capability.capability LIKE '%${keyword}%')
+        ORDER BY distance ASC, requests.request_status, resource.name
     """)
 
     return t.substitute({'keyword': keyword, 'incident_id': incident_id,
                          'distance': distance})
 
 
-def search_all_sql(keyword, esf_id, incident_id, distance):
+def all_sql(keyword, esf_id, incident_id, distance):
     """
     Builds sql query search for all criteria
     """
     distance = convert_distance(distance)
 
     t = Template("""
-        SELECT DISTINCT
-        `resource`.`resource_id`,
-        `resource`.`name`,
-        `user`.`name`,
-        `resource`.`amount`,
-        `cost_time_period`.`time_period`,
-        `requests`.`request_status`,
-        `requests`.`return_by_date`,
-        distance_formula(`resource`.`latitude`, `resource`.`longitude`,
-                `incident_info`.`latitude`, `incident_info`.`longitude`)
-                AS `distance`,
-        `resource`.`username`
-        FROM `resource`
-        LEFT JOIN `incident`
-        ON `resource`.`username` = `incident`.`username`
-        LEFT JOIN `capability`
-        ON `resource`.`resource_id` = `capability`.`resource_id`
-        LEFT JOIN `resource_esf`
-        ON `resource`.`resource_id` = `resource_esf`.`resource_id`
-        JOIN `user`
-        ON `resource`.`username` = `user`.`username`
-        JOIN `cost_time_period`
-        ON `cost_time_period`.`cost_time_period_id` =
-            `resource`.`cost_time_period_id`
+        SELECT DISTINCT resource.resource_id, resource.name, user.name,
+            resource.amount, cost_time_period.time_period,
+            requests.request_status, requests.return_by_date,
+            distance_formula(resource.latitude, resource.longitude,
+                incident_info.latitude, incident_info.longitude) AS distance,
+            resource.username
+        FROM resource
+        LEFT JOIN incident
+            ON resource.username = incident.username
+        LEFT JOIN capability
+            ON resource.resource_id = capability.resource_id
+        LEFT JOIN resource_esf
+            ON resource.resource_id = resource_esf.resource_id
+        JOIN user
+            ON resource.username = user.username
+        JOIN cost_time_period
+            ON cost_time_period.cost_time_period_id =
+                resource.cost_time_period_id
         LEFT JOIN
-        (SELECT resource_id, return_by_date,
-            CASE
-                WHEN status = 'Deployed' THEN 'Not Available'
-                ELSE 'Available'
-            END AS request_status
-        FROM
-            resource_request
-                JOIN resource_request_status
-                ON resource_request_status.resource_request_status_id = resource_request.resource_request_status_id
-                GROUP BY resource_id
-          ) requests ON requests.resource_id = resource.resource_id
+            (SELECT resource_id, return_by_date,
+                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                    ELSE 'Available'
+                END AS request_status
+            FROM resource_request
+            JOIN resource_request_status
+                ON resource_request_status.resource_request_status_id =
+                    resource_request.resource_request_status_id
+            GROUP BY resource_id
+            ) requests
+                ON requests.resource_id = resource.resource_id
         CROSS JOIN
-            (SELECT `incident_id`, `latitude`, `longitude`
-            FROM `incident`
-            WHERE `incident_id` = $incident_id) `incident_info`
-        WHERE distance_formula(`resource`.`latitude`, `resource`.`longitude`,
-            `incident_info`.`latitude`, `incident_info`.`longitude`) < $distance
-            AND (`resource`.`name` LIKE '%${keyword}%' OR
-            `resource`.model LIKE '%${keyword}%' OR
-            `capability`.`capability` LIKE '%${keyword}%') AND
-            (`resource_esf`.`esf_id` = $esf_id OR
-            `resource`.`primary_esf_id` = $esf_id)
-        ORDER BY distance ASC, `requests`.`request_status`, resource.name
+            (SELECT incident_id, latitude, longitude
+            FROM incident
+            WHERE incident_id = $incident_id) incident_info
+        WHERE distance_formula(resource.latitude, resource.longitude,
+            incident_info.latitude, incident_info.longitude) < $distance
+            AND (resource.name LIKE '%${keyword}%' OR
+            resource.model LIKE '%${keyword}%' OR
+            capability.capability LIKE '%${keyword}%') AND
+            (resource_esf.esf_id = $esf_id OR
+            resource.primary_esf_id = $esf_id)
+        ORDER BY distance ASC, requests.request_status, resource.name
     """)
 
     return t.substitute({'incident_id': incident_id, 'distance': distance,
@@ -520,10 +478,11 @@ def search_all_sql(keyword, esf_id, incident_id, distance):
 
 
 def get_incident_sql(incident_id):
+    """
+    Builds SQL for getting a specific incident
+    """
     t = Template("""
-        SELECT
-            incident_id,
-            description
+        SELECT incident_id, description
         FROM incident
         WHERE incident_id = $incident_id
         LIMIT 1

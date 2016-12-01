@@ -3,11 +3,10 @@ import sys
 
 from flask import Flask, session, redirect, url_for, request
 
-# necessary to ensure modules are found
-
+# necessary to ensure application specific modules are found
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from routes.resource_status import *
+from routes.resource_status import resource_status_route
 from routes.login import index_route
 from routes.add_resource import add_resource_route
 from routes.menu import menu_route
@@ -18,6 +17,10 @@ from routes.search_results import user_request, owner_deploy, owner_repair
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
+# ###########################
+# Setup all route handling
+# ###########################
 
 
 @app.before_request
@@ -43,36 +46,41 @@ def menu():
     return menu_route()
 
 
-@app.route('/addresource', methods=['GET', 'POST'])
+@app.route('/add-resource', methods=['GET', 'POST'])
 def add_resource():
     return add_resource_route()
 
 
-@app.route('/addincident', methods=['GET', 'POST'])
+@app.route('/add-incident', methods=['GET', 'POST'])
 def add_incident():
     return add_incident_route()
 
 
-@app.route('/searchresources', methods=['GET', 'POST'])
+@app.route('/search-resources', methods=['GET', 'POST'])
 def search_resources():
     return search_resources_route()
 
 
-@app.route('/resource/request/', methods=['GET'])
+@app.route('/search-resources/request/', methods=['GET'])
 def search_results_resource_request():
+
     resource_id = request.args.get('resource-id')
     incident_id = request.args.get('incident-id')
+
     return user_request(inc_id=incident_id, res_id=resource_id )
 
 
-@app.route('/resource/repair/', methods=['GET'])
+@app.route('/search-resources/repair/', methods=['GET'])
 def search_results_resource_repair():
+
     resource_id = request.args.get('resource-id')
+
     return owner_repair(res_id=resource_id)
 
 
-@app.route('/resource/deploy/', methods=['GET'])
+@app.route('/search-resources/deploy/', methods=['GET'])
 def search_results_resource_deploy():
+
     resource_id = request.args.get('resource-id')
     incident_id = request.args.get('incident-id')
 
@@ -81,38 +89,38 @@ def search_results_resource_deploy():
 
 @app.route('/resource-status', methods=['GET'])
 def resource_status():
-    return get_resource_status_route()
+    return resource_status_route()
 
 
-@app.route('/resource/return', methods=['GET'])
-def return_resource():
-    return return_resource_in_use()
-
-
-@app.route('/resource-request/cancel', methods=['GET'])
-def cancel_resource_request():
-    return cancel_resource_request_for_resource()
-
-
-@app.route('/resource/deploy', methods=['GET'])
+@app.route('/resource-status/deploy', methods=['GET'])
 def deploy_resource():
-    return deploy_resource_from_request()
+    return resource_status_route()
 
 
-@app.route('/resource/reject', methods=['GET'])
+@app.route('/resource-status/return', methods=['GET'])
+def return_resource():
+    return resource_status_route()
+
+
+@app.route('/resource-status/reject', methods=['GET'])
 def reject_resource():
-    return reject_resource_from_request()
+    return resource_status_route()
 
 
-@app.route('/resource/repair/cancel', methods=['GET'])
+@app.route('/resource-status/request/cancel', methods=['GET'])
+def cancel_resource_request():
+    return resource_status_route()
+
+
+@app.route('/resource-status/repair/cancel', methods=['GET'])
 def cancel_resource_repair():
-    return cancel_request_for_resource_repair()
+    return resource_status_route()
 
 
-@app.route('/resourcereport', methods=['GET'])
+@app.route('/resource-report', methods=['GET'])
 def resource_report():
     return resource_report_route()
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0')

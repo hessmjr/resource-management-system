@@ -1,8 +1,8 @@
 -- Users --
-INSERT INTO `user` (`username`, `name`, `password`) VALUES ('user1', 'Mark Hess', 'password');
-INSERT INTO `user` (`username`,`name`,`password`) VALUES ('user2','Robert Newton', 'password');
-INSERT INTO `user` (`username`,`name`,`password`) VALUES ('user4','Yiwei Yan', 'password');
-INSERT INTO `user` (`username`,`name`,`password`) VALUES ('user3','Zachary Hooks', 'password');
+INSERT INTO `user` (`username`, `name`, `password`) VALUES ('user1', 'John Doe', 'password');
+INSERT INTO `user` (`username`,`name`,`password`) VALUES ('user2','NSA', 'password');
+INSERT INTO `user` (`username`,`name`,`password`) VALUES ('user4','Big City', 'password');
+INSERT INTO `user` (`username`,`name`,`password`) VALUES ('user3','Foo Bar Inc', 'password');
 
 -- User Subclasses --
 INSERT INTO `municipality` (`username`,`population_size`) VALUES ('user3',1500000);

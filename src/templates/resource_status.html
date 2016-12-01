@@ -48,7 +48,7 @@
               <td>{{ res_use[5] }}</td>
               <td>
 
-                <a href="/resource/return?id={{ res_use[6] }}">
+                <a href="/resource-status/return?id={{ res_use[6] }}">
                   <button class="btn-floating waves-effect waves-light" title="Return"  type="button">
                     <i class="material-icons">keyboard_return</i>
                   </button>
@@ -97,7 +97,7 @@
               <td>{{ req_by_me[4] }}</td>
               <td>
 
-                <a href="/resource-request/cancel?id={{ req_by_me[5] }}">
+                <a href="/resource-status/request/cancel?id={{ req_by_me[5] }}">
                   <button class="btn-floating waves-effect waves-light" title="Cancel"  type="button">
                     <i class="material-icons">cancel</i>
                   </button>
@@ -146,7 +146,7 @@
               {% if req_rec[6] != 'Deployed' %}
                 <td>
 
-                  <a href="/resource/deploy?id={{ req_rec[5] }}">
+                  <a href="/resource-status/deploy?id={{ req_rec[5] }}">
                     <button class="btn-floating waves-effect waves-light" title="Deploy"  type="button">
                       <i class="material-icons">launch</i>
                     </button>
@@ -156,7 +156,7 @@
               {% endif %}
               <td>
 
-                <a href="/resource/reject?id={{ req_rec[5] }}">
+                <a href="/resource-status/reject?id={{ req_rec[5] }}">
                   <button class="btn-floating waves-effect waves-light" title="Reject"  type="button">
                     <i class="material-icons">stop</i>
                   </button>
@@ -203,7 +203,7 @@
               {% if repair_req[5] != 'In-progress' %}
                 <td>
 
-                  <a href="/resource/repair/cancel?id={{ repair_req[4] }}">
+                  <a href="/resource-status/repair/cancel?id={{ repair_req[4] }}">
                     <button class="btn-floating waves-effect waves-light" title="Cancel"  type="button">
                       <i class="material-icons">cancel</i>
                     </button>

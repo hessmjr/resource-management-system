@@ -1,6 +1,6 @@
 from re import compile, match
-from uuid import uuid4
 from string import Template
+from uuid import uuid4
 
 from flask import render_template, request, session, redirect, url_for, abort
 
@@ -192,9 +192,9 @@ def new_resource_sql(resource_id, username, name, model, lat, longitude,
     Builds new resource SQL
     """
     t = Template("""
-        INSERT INTO `emergency_response_system`.`resource`
+        INSERT INTO resource
         VALUES ('$guid', '$cost_id', '$username', '$resource_name',
-        '$model', '$lat', '$long', '$amount', '$esf_id')
+            '$model', '$lat', '$long', '$amount', '$esf_id')
     """)
 
     return t.safe_substitute({'username': username, 'guid': resource_id,
@@ -208,7 +208,7 @@ def add_sec_esf_sql(resource_id, second_esf_id):
     Builds SQL for adding new secondary esfs
     """
     t = Template("""
-        INSERT INTO `emergency_response_system`.`resource_esf`
+        INSERT INTO resource_esf
         VALUES ('$guid', '$esf_id')
     """)
 
