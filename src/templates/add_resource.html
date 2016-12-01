@@ -1,0 +1,171 @@
+{% extends "layout.html" %}
+{% block title %} Add Resource | {{ super() }}{% endblock %}
+
+{% block body %}
+  <div class="container">
+
+    <div class="row header">
+      <div class="col s12 blue-grey-text center">
+        <h4>New Resource Info</h4>
+        <hr>
+      </div>
+    </div>
+
+    {% if error %}<div class="row"><div class="col s12 red-text error center">
+      <h6><strong>Error:</strong> {{ error }}</h6>  </div></div>{% endif %}
+
+    <div class="row">
+
+      <form class="col s10 offset-s1" id="add-resource" action="{{ url_for('add_resource') }}"
+            method="POST" onsubmit="return validateForm(this.submited);">
+
+        <div class="row">
+          <div class="col s6">
+            <!--Auto-Assign Unique Numeric ID -->
+            <label for="resource_id">Resource ID:</label>
+            <input id="resource_id" class="input" name="resource_id" readonly="readonly"
+                   type="text" value="{{ resource_id }}"/>
+          </div>
+          <div class="col s6">
+            <!--Field Set by Default. Not editable -->
+            <label for="owner_name">Owner:</label>
+            <input id="owner_name" class="input" name="owner" readonly="readonly"
+                   type="text" value="{{ owner_name }}"/>
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="name" class="input" name="name" type="text"/>
+            <label for="name">Resource Name</label>
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="col s12 input-field">
+
+            <!--Mandatory. Only one selection-->
+            <select name="esf_id" id="primary-esf">
+              <option value="" disabled selected>Choose your option</option>
+              {% for esf in esfs %}
+                <option value={{ esf[0] }}>{{ "#" + (loop.index0 + 1)|string + " - " + esf[1] }}</option>
+              {% endfor %}
+            </select>
+            <label for="primary-esf">Choose a primary ESF</label>
+
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col s12 input-field">
+
+            <!--Optional Field-->
+            <select id="additional-esf" name="second_esfs" multiple="multiple">
+              <option value="" disabled selected>Choose your option</option>
+              {% for esf in esfs %}
+                <option value={{ esf[0] }}>{{ "#" + (loop.index0 + 1)|string + " - " + esf[1] }}</option>
+              {% endfor %}
+            </select>
+            <label for="additional-esf">Select additional ESF(s) if applicable</label>
+
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="model" class="input" name="model" type="text"/>
+            <label for="model">Model</label>
+          </div>
+        </div>
+
+
+        <div class="row capabilities">
+
+          <div class="col s1">
+            <button class="btn-floating waves-effect waves-light" id="add-capability" title="Add">
+              <i class="material-icons">add</i>
+            </button>
+          </div>
+
+          <div class="input-field col s5">
+            <input id="new-capability" class="input" type="text"/>
+            <label for="new-capability">Capability</label>
+          </div>
+
+          <div class="col s6">
+            <label for="capabilities">Capabilities:</label>
+            <select class="browser-default disabled" id="capabilities" name="capabilities"
+                    multiple="multiple" size=10 style='height: 100%;'></select>
+          </div>
+
+        </div>
+
+
+        <div class="row">
+          <fieldset>
+
+            <legend>Home Location</legend>
+
+            <div class="input-field">
+              <input id="lat" class="input" name="lat" type="text"/>
+              <label for="lat">Latitude</label>
+            </div>
+
+            <div class="input-field">
+              <input id="long" class="input" name="long" type="text"/>
+              <label for="long">Longitude</label>
+            </div>
+
+          </fieldset>
+        </div>
+
+
+        <div class="row">
+          <fieldset>
+
+            <legend>Cost</legend>
+
+            <div class="input-field">
+              <label for="cost">Amount in USD</label>
+              <input id="amount" class="input" name="cost" type="text"/>
+            </div>
+
+            <div>
+              <select name="cost_id" id="cost_id">
+                <option value="" disabled selected>Choose your option</option>
+                {% for cost in cost_types %}
+                  <option value={{ cost[0] }}>{{ cost[1] }}</option>
+                {% endfor %}
+              </select>
+              <label for="cost_id">Per</label>
+
+            </div>
+          </fieldset>
+        </div>
+
+
+        <button class="btn" type="submit" name="cancel" value="Cancel"
+                onclick="this.form.submited=this.value;" >Cancel
+          <i class="material-icons right"></i>
+        </button>
+
+        <button class="btn" type="submit" name="submit" value="Submit"
+                onclick="this.form.submited=this.value;" >Submit
+          <i class="material-icons right"></i>
+        </button>
+
+        <!--When the user clicks save, ERMS should validate all fields before
+        storing the resource to the database. In particular, the system should
+        verify that all required fields are filled it, that the dollar amount
+        is not negative, and that the latitude and longitude fields contain
+        valid coordinates.-->
+
+      </form>
+
+    </div>
+  </div>
+  <script type="text/javascript" src="/static/js/add_resource.js"></script>
+{% endblock %}

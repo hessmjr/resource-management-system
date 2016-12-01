@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block title %} Main Menu| {{ super() }}{% endblock %}
+
+{% block body %}
+  <div class="container">
+
+    <div class="row">
+      <div class="col s12 blue-grey-text center">
+        <h4>ERS Main Menu</h4>
+        <hr>
+      </div>
+    </div>
+
+    {% if details|length > 0 %}
+      <div class="row">
+        <div class="col s8 user-details center offset-s2">
+          <span><b>{{ details['name'] }}</b></span><br>
+          {% if details['population_size'] %}
+            <span> Population Size: {{ details['population_size'] }}</span><br>
+          {% endif %}
+          {% if details['headquarters'] %}
+            <span> Population Size: {{ details['headquarters'] }}</span><br>
+          {% endif %}
+          {% if details['jurisdiction'] %}
+            <span> Headquarters: {{ details['jurisdiction'] }}</span><br>
+          {% endif %}
+          {% if details['job_title'] %}
+            <span> Job Title: {{ details['job_title'] }}</span><br>
+          {% endif %}
+          {% if details['hired_date'] %}
+            <span> Hired Date: {{ details['hired_date'] }}</span><br>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="col s8 center offset-s2">
+        <a class="menu" href="{{ url_for('add_resource') }}"><div class="card-panel hoverable">Add Resource</div></a>
+        <a class="menu" href="{{ url_for('add_incident') }}"><div class="card-panel hoverable">Add Incident</div></a>
+        <a class="menu" href="{{ url_for('search_resources') }}"><div class="card-panel hoverable">Search Resources</div></a>
+        <a class="menu" href="{{ url_for('resource_status') }}"><div class="card-panel hoverable">Resource Status</div></a>
+        <a class="menu" href="{{ url_for('resource_report') }}"><div class="card-panel hoverable">Resource Report</div></a>
+        <a class="menu" href="{{ url_for('login') }}"><div class="card-panel hoverable">Exit</div></a>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}
+
+
+

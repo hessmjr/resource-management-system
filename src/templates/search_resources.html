@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block title %} Search Resources | {{ super() }}{% endblock %}
+
+
+{% block body %}
+  <div class="container">
+
+    <div class="row header">
+      <div class="col s12 blue-grey-text center">
+        <h4>Search Resource</h4>
+        <hr>
+      </div>
+    </div>
+
+    {% if error %}<div class="row"><div class="col s12 red-text error center">
+      <h6><strong>Error:</strong> {{ error }}</h6>  </div></div>{% endif %}
+
+    <div class="row">
+      <form class="col s10 offset-s1" id="Search Resource" action="{{ url_for('search_resources') }}" method="POST" >
+
+        <!-- Searches name, model and the capabilities fields of resources-->
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="keyword" class="input" name="keyword" type="text" value=""/>
+            <label for="keyword">Keyword</label>
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="col s12 input-field">
+
+            <!--Mandatory. Only one selection-->
+            <select name="esf" id="esf">
+              <option value="" disabled selected></option>
+              {% for esf in esfs %}
+                <option value={{ esf[0] }}>{{ "#" + (loop.index0 + 1)|string + " - " + esf[1] }}</option>
+              {% endfor %}
+            </select>
+            <label for="esf">ESF</label>
+
+          </div>
+        </div>
+
+
+        <div class="row">
+          <fieldset>
+            <legend>Incident Search</legend>
+
+            <!--Incident- These dropdown values should populate a concatenated value
+              from fields 'incident_id' and 'description' fron the "New Incident Form"-->
+            <div class="row">
+              <div class="col s12 input-field">
+
+                <!--Mandatory. Only one selection-->
+                <select name ="incident_id" id ="incident">
+                  <option value="" disabled selected></option>
+                  {% for incident in incidents %}
+                    <option value={{ incident[0] }}>{{ "(" + incident[0]|string + ") " + incident[1] }}</option>
+                  {% endfor %}
+                </select>
+                <label for="incident">Incident</label>
+
+              </div>
+            </div>
+
+            <!-- Create a text box float:right in middle of text-->
+            <div class="row">
+              <div class="input-field col s12">
+                <input id="distance" class="input" name="distance" type="text" value="" />
+                <label for="distance">Distance:</label>
+              </div>
+            </div>
+
+          </fieldset>
+        </div>
+
+
+        <!--Buttons. Cancel Button should return to main menu. Search button needs to return everything when all fields are blank-->
+        <button class="btn" type="submit" name="cancel" value="Cancel">Cancel
+          <i class="material-icons right"></i>
+        </button>
+
+        <button class="btn" type="submit" name="submit" value="Search">Search
+          <i class="material-icons right"></i>
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      $('select').material_select();
+    });
+  </script>
+{% endblock %}

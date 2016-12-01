@@ -1,0 +1,35 @@
+.table-condensed>thead>tr>th,
+.table-condensed>tbody>tr>th,
+.table-condensed>tfoot>tr>th,
+.table-condensed>thead>tr>td,
+.table-condensed>tbody>tr>td,
+.table-condensed>tfoot>tr>td{
+    padding: 2px;
+}
+
+a.menu {
+    font-size: large;
+}
+
+div.container {
+    margin: 2em auto;
+    width: 80%;
+    border: 5px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.error {
+    font-size: larger;
+}
+
+fieldset {
+    border: 5px solid #ccc;
+    border-radius: 5px;
+}
+
+legend {
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+}

@@ -1,0 +1,123 @@
+{% extends "layout.html" %}
+{% block title %} Search Results | {{ super() }}{% endblock %}
+
+{% block body %}
+
+  <div class="container">
+
+    <div class="row header">
+      <div class="col s12 blue-grey-text center">
+        <h4>Search Results</h4>
+        <hr>
+      </div>
+    </div>
+
+    {% if incident %}
+      <div class="row" id="incident-info">
+        <h5>Search Results for Incidents: </h5>
+        <span> {{ incident[1] }} (ID: {{ incident[0] }})</span>
+      </div>
+    {% endif %}
+
+    <div class="row" id="search-results">
+      <table class="striped centered">
+
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Resource Name</th>
+          <th>Owner</th>
+          <th>Cost</th>
+          <th>Status</th>
+          <th>Next Available</th>
+          {% if results[0] and results[0]|length > 7 %}
+            <th>Distance</th>
+            <th>Action</th>
+          {% endif %}
+        </tr>
+        </thead>
+
+
+        <tbody>
+
+        <!-- loop through each result-->
+        {% for result in results %}
+          <tr>
+            <td>{{ result[0] }}</td>
+            <td>{{ result[1] }}</td>
+            <td>{{ result[2] }}</td>
+            <td>${{ result[3] }}/{{ result[4] }}</td>
+
+            <td>{{ result[5] }}</td>
+
+            {% if result[6] == None %}
+              <td>NOW</td>
+            {% else %}
+              <td>{{ result[6] }}</td>
+            {% endif %}
+
+            {% if result[7] %}
+              <td>{{ result[7]|round(2, 'floor') }}km</td>
+              <!-- Display Actions -->
+              <td>
+                <!-- Can request resources that don't belong to current user -->
+                {% if username != result[8] %}
+
+                  <a href="/resource/request?resource-id={{ result[0] }}&incident-id={{ incident[0] }}">
+                    <button class="btn-floating waves-effect waves-light" title="Request"  type="button">
+                      <i class="material-icons">ring_volume</i>
+                    </button>
+                  </a>
+
+                {% endif %}
+                {% if username == result[8] %}
+
+                  <a href="/resource/deploy?resource-id={{ result[0] }}&incident-id={{ incident[0] }}">
+                    <button class="btn-floating waves-effect waves-light" title="Deploy"  type="button">
+                      <i class="material-icons">launch</i>
+                    </button>
+                  </a>
+
+                  <a href="/resource/repair?resource-id={{ result[0] }}">
+                    <button class="btn-floating waves-effect waves-light" title="Repair"  type="button">
+                      <i class="material-icons">settings</i>
+                    </button>
+                  </a>
+
+                {% endif %}
+              </td>
+            {% endif %}
+
+          </tr>
+        {% endfor %}
+
+        </tbody>
+
+      </table>
+    </div>
+
+
+    {% if results|length == 0 %}
+
+      <div class="row">
+        <div class="col s12 red-text error center">
+          <h6>Your search did not return any results</h6>
+        </div>
+      </div>
+
+      <a href="{{ url_for('search_resources') }}">
+        <button class="btn" type="submit" name="submit" value="Search">Search Resources
+          <i class="material-icons right"></i>
+        </button>
+      </a>
+
+    {% endif %}
+
+    <a href="{{ url_for('menu') }}">
+      <button class="btn" type="submit" name="submit" value="Menu">Menu
+        <i class="material-icons right"></i>
+      </button>
+    </a>
+
+  </div>
+{% endblock %}

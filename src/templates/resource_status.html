@@ -1,0 +1,229 @@
+{% extends "layout.html" %}
+
+{% block title %} Resource Status| {{ super() }}{% endblock %}
+
+{% block body %}
+
+  <div class="container">
+
+    <div class="row header">
+      <div class="col s12 blue-grey-text center">
+        <h4>Resource Status</h4>
+        <hr>
+      </div>
+    </div>
+
+    <div class="row">
+      <h5>Resources in use</h5>
+
+      {% if resources_in_use|length == 0 %}
+        <div class="row">
+          <div class="col s12 center">
+            <span>There are no resources currently in use for your incidents</span>
+          </div>
+        </div>
+
+      {% else %}
+        <table class="striped centered">
+          <thead>
+          <tr>
+            <th>Id</th>
+            <th>Resource Name</th>
+            <th>Incident</th>
+            <th>Resource Owner</th>
+            <th>Start Date</th>
+            <th>Return By</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          {% for res_use in resources_in_use %}
+            <tr>
+              <td>{{ res_use[0] }}</td>
+              <td>{{ res_use[1] }}</td>
+              <td>{{ res_use[2] }}</td>
+              <td>{{ res_use[3] }}</td>
+              <td>{{ res_use[4] }}</td>
+              <td>{{ res_use[5] }}</td>
+              <td>
+
+                <a href="/resource/return?id={{ res_use[6] }}">
+                  <button class="btn-floating waves-effect waves-light" title="Return"  type="button">
+                    <i class="material-icons">keyboard_return</i>
+                  </button>
+                </a>
+
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+
+        </table>
+      {% endif %}
+    </div>
+
+
+    <div class="row">
+      <h5>Resources Requested by Me</h5>
+
+      {% if resources_requested|length == 0 %}
+        <div class="row">
+          <div class="col s12 center">
+            <span>There are no resource requests</span>
+          </div>
+        </div>
+
+
+      {% else %}
+        <table class="striped centered">
+          <thead>
+          <tr>
+            <th>Id</th>
+            <th>Resource Name</th>
+            <th>Incident</th>
+            <th>Owner</th>
+            <th>Return by</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for req_by_me in resources_requested %}
+            <tr>
+              <td>{{ req_by_me[0] }}</td>
+              <td>{{ req_by_me[1] }}</td>
+              <td>{{ req_by_me[2] }}</td>
+              <td>{{ req_by_me[3] }}</td>
+              <td>{{ req_by_me[4] }}</td>
+              <td>
+
+                <a href="/resource-request/cancel?id={{ req_by_me[5] }}">
+                  <button class="btn-floating waves-effect waves-light" title="Cancel"  type="button">
+                    <i class="material-icons">cancel</i>
+                  </button>
+                </a>
+
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+
+
+    <div class="row">
+      <h5>Resource Requests received by me</h5>
+
+      {% if resource_requests_received|length == 0 %}
+        <div class="row">
+          <div class="col s12 center">
+            <span>You have not received any resource requests.</span>
+          </div>
+        </div>
+
+      {% else %}
+        <table class="striped centered">
+          <thead>
+          <tr>
+            <th>Id</th>
+            <th>Resource Name</th>
+            <th>Incident</th>
+            <th>Requested By</th>
+            <th>Return by</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for req_rec in resource_requests_received %}
+            <tr>
+              <td>{{ req_rec[0] }}</td>
+              <td>{{ req_rec[1] }}</td>
+              <td>{{ req_rec[2] }}</td>
+              <td>{{ req_rec[3] }}</td>
+              <td>{{ req_rec[4] }}</td>
+              <!-- req_rec is the status of the resource_request -->
+              {% if req_rec[6] != 'Deployed' %}
+                <td>
+
+                  <a href="/resource/deploy?id={{ req_rec[5] }}">
+                    <button class="btn-floating waves-effect waves-light" title="Deploy"  type="button">
+                      <i class="material-icons">launch</i>
+                    </button>
+                  </a>
+
+                </td>
+              {% endif %}
+              <td>
+
+                <a href="/resource/reject?id={{ req_rec[5] }}">
+                  <button class="btn-floating waves-effect waves-light" title="Reject"  type="button">
+                    <i class="material-icons">stop</i>
+                  </button>
+                </a>
+
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+
+
+    <div class="row">
+      <h5>Repairs Scheduled/In-progress</h5>
+
+      {% if resource_repairs|length == 0 %}
+        <div class="row">
+          <div class="col s12 center">
+            <span>You do not have any repairs currently scheduled or in-progress.</span>
+          </div>
+        </div>
+
+      {% else %}
+        <table class="striped centered">
+          <thead>
+          <tr>
+            <th>Id</th>
+            <th>Resource Name</th>
+            <th>Start On</th>
+            <th>Ready By</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for repair_req in resource_repairs %}
+            <tr>
+              <td>{{ repair_req[0] }}</td>
+              <td>{{ repair_req[1] }}</td>
+              <td>{{ repair_req[2] }}</td>
+              <td>{{ repair_req[3] }}</td>
+              <!-- Add logic to disable tag if repair is already scheduled -->
+              {% if repair_req[5] != 'In-progress' %}
+                <td>
+
+                  <a href="/resource/repair/cancel?id={{ repair_req[4] }}">
+                    <button class="btn-floating waves-effect waves-light" title="Cancel"  type="button">
+                      <i class="material-icons">cancel</i>
+                    </button>
+                  </a>
+
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+
+
+    <a href="{{ url_for('menu') }}">
+      <button class="btn" type="submit" name="submit" value="Menu">Menu
+        <i class="material-icons right"></i>
+      </button>
+    </a>
+
+  </div>
+{% endblock %}
