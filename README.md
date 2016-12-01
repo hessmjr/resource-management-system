@@ -30,18 +30,18 @@ In order to use
 ## Usage
 The application should be reachable from your browser at `http://localhost:5000/` once the Vagrant box is running.  There are 3 users built into the application for testing:
 
- - user1
- - user2
- - user3
- - user4
- 
- All users have the password `password`
- 
- 
- ## TODO
- 
- - [ ] clean up
- - [ ] fix date bug
- - [ ] fix UUID bug
- - [ ] resources available NOW when not bug
- - [x] ensure deploy and start
+- user1
+- user2
+- user3
+- user4
+
+All users have the password `password`
+
+
+## TODO
+
+- [ ] clean up
+- [ ] fix date bug
+- [ ] fix UUID bug
+- [ ] resources available NOW when not bug
+- [x] ensure deploy and start
