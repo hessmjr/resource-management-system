@@ -1,4 +1,5 @@
 from string import Template
+from datetime import datetime
 
 from flask import render_template, request, redirect, url_for, session
 
@@ -90,12 +91,9 @@ def search_resources_route(error=None):
         else:
             results = query_db(no_criteria_sql())
 
-        if error is not None:
-            return render_template('search_resources.html', esfs=esfs,
-                                   incidents=incidents, error=error)
-        else:
-            return render_template('search_results.html', username=username,
-                                   incident=incident, results=results)
+        # render the new results on the search results page
+        return render_template('search_results.html', username=username,
+                               incident=incident, results=results)
 
 
 def convert_distance(distance):
@@ -151,7 +149,8 @@ def no_criteria_sql():
                 resource.cost_time_period_id
         LEFT JOIN
             (SELECT resource_id, return_by_date,
-                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                CASE WHEN status = 'Deployed' or CURRENT_DATE < return_by_date
+                    THEN 'Not Available'
                     ELSE 'Available'
                 END AS request_status
             FROM resource_request
@@ -184,7 +183,8 @@ def keyword_sql(keyword):
             resource.cost_time_period_id
         LEFT JOIN
             (SELECT resource_id, return_by_date,
-                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                CASE WHEN status = 'Deployed' or CURRENT_DATE < return_by_date
+                    THEN 'Not Available'
                     ELSE 'Available'
                 END AS request_status
             FROM resource_request
@@ -223,7 +223,8 @@ def incident_sql(incident_id, distance):
                 resource.cost_time_period_id
         LEFT JOIN
             (SELECT resource_id, return_by_date,
-                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                CASE WHEN status = 'Deployed' or CURRENT_DATE < return_by_date
+                    THEN 'Not Available'
                     ELSE 'Available'
                 END AS request_status
             FROM resource_request
@@ -263,7 +264,8 @@ def esf_sql(esf_id):
                 resource.cost_time_period_id
         LEFT JOIN
             (SELECT resource_id, return_by_date,
-                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                CASE WHEN status = 'Deployed' or CURRENT_DATE < return_by_date
+                    THEN 'Not Available'
                     ELSE 'Available'
                 END AS request_status
             FROM resource_request
@@ -301,7 +303,8 @@ def keyword_esf_sql(keyword, esf_id):
                 resource.cost_time_period_id
         LEFT JOIN
             (SELECT resource_id, return_by_date,
-                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                CASE WHEN status = 'Deployed' or CURRENT_DATE < return_by_date
+                    THEN 'Not Available'
                     ELSE 'Available'
                 END AS request_status
             FROM resource_request
@@ -346,7 +349,8 @@ def incident_esf_sql(esf_id, incident_id, distance):
                 resource.cost_time_period_id
         LEFT JOIN
             (SELECT resource_id, return_by_date,
-                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                CASE WHEN status = 'Deployed' or CURRENT_DATE < return_by_date
+                    THEN 'Not Available'
                     ELSE 'Available'
                 END AS request_status
             FROM resource_request
@@ -396,7 +400,8 @@ def keyword_incident_sql(keyword, incident_id, distance):
                 resource.cost_time_period_id
         LEFT JOIN
             (SELECT resource_id, return_by_date,
-                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                CASE WHEN status = 'Deployed' or CURRENT_DATE < return_by_date
+                    THEN 'Not Available'
                     ELSE 'Available'
                 END AS request_status
             FROM resource_request
@@ -449,7 +454,8 @@ def all_sql(keyword, esf_id, incident_id, distance):
                 resource.cost_time_period_id
         LEFT JOIN
             (SELECT resource_id, return_by_date,
-                CASE WHEN status = 'Deployed' THEN 'Not Available'
+                CASE WHEN status = 'Deployed' or CURRENT_DATE < return_by_date
+                    THEN 'Not Available'
                     ELSE 'Available'
                 END AS request_status
             FROM resource_request
