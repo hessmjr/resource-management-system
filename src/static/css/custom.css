@@ -3,8 +3,12 @@
 .table-condensed>tfoot>tr>th,
 .table-condensed>thead>tr>td,
 .table-condensed>tbody>tr>td,
-.table-condensed>tfoot>tr>td{
+.table-condensed>tfoot>tr>td {
     padding: 2px;
+}
+
+tfoot.footer-center>tr>td {
+    text-align: center;
 }
 
 a.menu {

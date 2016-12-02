@@ -39,10 +39,10 @@ The application should be reachable from your browser at `http://localhost:5000/
 ## TODO
 
 - [x] clean up
-- [ ] fix UUID bug
+- [x] fix UUID bug
 - [ ] consolidate custom JS
 - [ ] fix date bug
 - [ ] resources available NOW when not bug
-- [ ] totals at bottom of resource report
+- [x] totals at bottom of resource report
 - [x] change name of schema to erms
 - [x] ensure deploy and start

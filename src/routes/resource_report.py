@@ -24,8 +24,8 @@ def resource_report_query(username):
     Creates resource report SQL
     """
     t = Template("""
-        SELECT esf.esf_id, esf.description, IF(totals.total,
-            totals.total, 0), IF(used.in_use, used.in_use, 0)
+        SELECT esf.esf_id, esf.description, IF(totals.total, totals.total, 0)
+            AS `Total Resources`, IF(used.in_use, used.in_use, 0) AS `In Use`
         FROM esf
         LEFT JOIN resource
             ON esf.esf_id = resource.primary_esf_id

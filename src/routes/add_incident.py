@@ -12,7 +12,7 @@ def add_incident_route(error=None):
     Adds incident to system; return template
     :param error - message ot pass to user if any specified
     """
-    # get owner
+    # get owner and create ID
     username = session.get('username')
     incident_id = int(uuid4().int >> 96)
 
@@ -80,7 +80,7 @@ def add_new_incident(username):
 
     # SQL template
     t = Template("""
-        INSERT INTO `emergency_response_system`.`incident`
+        INSERT INTO incident
         VALUES ('$incident_id', '$username', '$description','$latitude',
             '$longitude', '$incident_date')
     """)
@@ -89,7 +89,7 @@ def add_new_incident(username):
     query = t.safe_substitute({'incident_id': incident_id, 'username': username,
                                'description': description, 'latitude': lat,
                                'longitude': lng, 'incident_date': incident_date})
-
+    print query
     # commit and return to user
     commit_db(query)
     return None

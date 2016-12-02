@@ -14,30 +14,41 @@
 
     <div class="row">
       <table class="table-condensed striped centered">
+        {% set totals = {'total': 0, 'used': 0} %}
 
         <thead>
-        <tr>
-          <th>#</th>
-          <th>Primary Emergency Support Function</th>
-          <th>Total Resources</th>
-          <th>Resources in Use</th>
-        </tr>
+          <tr>
+            <th>#</th>
+            <th>Primary Emergency Support Function</th>
+            <th>Total Resources</th>
+            <th>Resources in Use</th>
+          </tr>
         </thead>
 
         <tbody>
         <!-- loop through each result and extract esf id, esf, total, and in use-->
         {% for result in results %}
+          {% if totals.update({'total': totals.total + result[2]}) %}{% endif %}
+          {% if totals.update({'used': totals.used + result[3]}) %}{% endif %}
 
           <tr>
             <td>{{ result[0] }}</td>
-            <td class="">{{ result[1] }}</td>
+            <td>{{ result[1] }}</td>
             <td>{{ result[2] }}</td>
             <td>{{ result[3] }}</td>
           </tr>
 
         {% endfor %}
-
         </tbody>
+
+        <tfoot class="footer-center">
+          <tr>
+            <td> </td>
+            <td><strong>Totals</strong></td>
+            <td>{{ totals.total }}</td>
+            <td>{{ totals.used }}</td>
+          </tr>
+        </tfoot>
 
       </table>
     </div>

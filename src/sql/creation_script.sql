@@ -120,7 +120,7 @@ DROP TABLE IF EXISTS `erms`.`incident` ;
 
 
 CREATE TABLE IF NOT EXISTS `erms`.`incident` (
-  `incident_id` INT NOT NULL AUTO_INCREMENT,
+  `incident_id` CHAR(16) NOT NULL,
   `username` VARCHAR(50) NOT NULL,
   `description` VARCHAR(50) NOT NULL,
   `latitude` DECIMAL NOT NULL,

@@ -22,11 +22,13 @@ def add_resource_route(error=None):
     owner_name = session.get('name')
     username = session.get('username')
 
+    # create resource id
+    resource_id = int(uuid4().int >> 96)
+
     # build new resource form for user
     if request.method == 'GET':
 
-        # create unique ID and return to user
-        resource_id = create_resource_id()
+        # return template to user
         return render_template('add_resource.html', resource_id=resource_id,
                                owner_name=owner_name, esfs=esfs,
                                cost_types=costs)
@@ -43,7 +45,6 @@ def add_resource_route(error=None):
             return redirect(url_for('menu'))
 
         # pull resource id from the form if exists
-        resource_id = create_resource_id()
         if 'resource_id' in request.form:
             resource_id = request.form['resource_id']
 
@@ -54,14 +55,6 @@ def add_resource_route(error=None):
 
     # send user back to when complete
     return abort(405)
-
-
-def create_resource_id():
-    """
-    Creates a UUID to be used for resource creation
-    :return: integer
-    """
-    return int(uuid4().int >> 96)
 
 
 def add_rsrce(username, esfs, costs):

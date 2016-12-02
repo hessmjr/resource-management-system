@@ -5,7 +5,7 @@ from flask import render_template, session
 from src.database import get_db, query_db
 
 
-def menu_route():
+def menu_route(message=None):
     """
     Handler for menu page
     :return: rendered template for url
