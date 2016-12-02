@@ -1,6 +1,6 @@
 from string import Template
 
-from flask import render_template, request, session
+from flask import render_template, request, session, redirect, url_for, abort
 
 from src.database import query_db, commit_db
 
@@ -11,26 +11,6 @@ def resource_status_route(error=None):
     :return: rendered template
     """
     username = session.get('username')
-
-    # if user deployed a resource
-    if '/deploy' in request.url:
-        update_resource_status(deploy_sql())
-
-    # if user returned a resource
-    elif '/return' in request.url:
-        update_resource_status(return_sql())
-
-    # if user rejected a resource
-    elif '/reject' in request.url:
-        update_resource_status(reject_sql())
-
-    # if user canceled a request for a resource
-    elif '/request/cancel' in request.url:
-        update_resource_status(cancel_request_sql())
-
-    # if user canceled a resource repair
-    elif '/repair/cancel' in request.url:
-        update_resource_status(cancel_repair_sql())
 
     # query to get the statuses of user resources
     in_use = query_db(in_use_sql(username))
@@ -45,19 +25,46 @@ def resource_status_route(error=None):
                            resource_repairs=repairs, error=error)
 
 
-def update_resource_status(sql_template):
+def update_status_route():
     """
     Updates the database with the given SQL statement
-    :param sql_template - SQL template to use for updateing
     :return: redirect to resource status page
     """
+    sql_template = ''
+
     # get requested resource ID
     req_id = request.args.get('id', '')
+
+    # if user deployed a resource
+    if '/deploy' in request.url:
+        sql_template = deploy_sql()
+
+    # if user returned a resource
+    elif '/return' in request.url:
+        sql_template = return_sql()
+
+    # if user rejected a resource
+    elif '/reject' in request.url:
+        sql_template = reject_sql()
+
+    # if user canceled a request for a resource
+    elif '/request/cancel' in request.url:
+        sql_template = cancel_request_sql()
+
+    # if user canceled a resource repair
+    elif '/repair/cancel' in request.url:
+        sql_template = cancel_repair_sql()
+
+    # otherwise invalid request
+    else:
+        abort(405)
 
     # if ID isn't blank create query and update database
     if req_id != '':
         query = sql_template.safe_substitute({'resource_request_id': req_id})
         commit_db(query)
+
+    return redirect(url_for('resource_status'))
 
 
 def in_use_sql(username):

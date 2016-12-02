@@ -6,7 +6,7 @@ from flask import Flask, session, redirect, url_for, request
 # necessary to ensure application specific modules are found
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from routes.resource_status import resource_status_route
+from routes.resource_status import resource_status_route, update_status_route
 from routes.login import index_route
 from routes.add_resource import add_resource_route
 from routes.menu import menu_route
@@ -67,7 +67,7 @@ def search_results_resource_request():
     resource_id = request.args.get('resource-id')
     incident_id = request.args.get('incident-id')
 
-    return user_request(inc_id=incident_id, res_id=resource_id )
+    return user_request(inc_id=incident_id, res_id=resource_id)
 
 
 @app.route('/search-resources/repair/', methods=['GET'])
@@ -94,27 +94,27 @@ def resource_status():
 
 @app.route('/resource-status/deploy', methods=['GET'])
 def deploy_resource():
-    return resource_status_route()
+    return update_status_route()
 
 
 @app.route('/resource-status/return', methods=['GET'])
 def return_resource():
-    return resource_status_route()
+    return update_status_route()
 
 
 @app.route('/resource-status/reject', methods=['GET'])
 def reject_resource():
-    return resource_status_route()
+    return update_status_route()
 
 
 @app.route('/resource-status/request/cancel', methods=['GET'])
 def cancel_resource_request():
-    return resource_status_route()
+    return update_status_route()
 
 
 @app.route('/resource-status/repair/cancel', methods=['GET'])
 def cancel_resource_repair():
-    return resource_status_route()
+    return update_status_route()
 
 
 @app.route('/resource-report', methods=['GET'])
