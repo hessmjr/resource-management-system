@@ -1,4 +1,5 @@
 from string import Template
+from datetime import datetime
 
 from flask import render_template, request, session, redirect, url_for, abort
 
@@ -11,6 +12,7 @@ def resource_status_route(error=None):
     :return: rendered template
     """
     username = session.get('username')
+    now = datetime.today().date()
 
     # query to get the statuses of user resources
     in_use = query_db(in_use_sql(username))
@@ -22,7 +24,7 @@ def resource_status_route(error=None):
     return render_template('resource_status.html', resources_in_use=in_use,
                            resources_requested=requested,
                            resource_requests_received=requests_recvd,
-                           resource_repairs=repairs, error=error)
+                           resource_repairs=repairs, now=now, error=error)
 
 
 def update_status_route():

@@ -263,6 +263,7 @@ CREATE TABLE IF NOT EXISTS `erms`.`resource_request` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+
 -- -----------------------------------------------------
 -- Table `erms`.`resource_repair`
 -- -----------------------------------------------------
@@ -282,9 +283,6 @@ CREATE TABLE IF NOT EXISTS `erms`.`resource_repair` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
-
-
-
 
 
 -- -----------------------------------------------------

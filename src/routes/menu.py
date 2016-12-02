@@ -27,7 +27,7 @@ def menu_route(message=None):
             if a is not None:
                 details[b[0]] = a
 
-    return render_template("menu.html", details=details)
+    return render_template("menu.html", details=details, message=message)
 
 
 def get_user_details_query(username):
