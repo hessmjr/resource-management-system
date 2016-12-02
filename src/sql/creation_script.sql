@@ -256,7 +256,7 @@ DROP TABLE IF EXISTS `erms`.`resource_request` ;
 CREATE TABLE IF NOT EXISTS `erms`.`resource_request` (
   `resource_request_id` INT NOT NULL AUTO_INCREMENT,
   `resource_request_status_id` INT NOT NULL,
-  `incident_id` INT NOT NULL,
+  `incident_id` CHAR(16) NOT NULL,
   `resource_id` CHAR(16) NOT NULL,
   `start_date` DATE NOT NULL,
   `return_by_date` DATE NOT NULL,
