@@ -31,9 +31,12 @@ def add_incident_route(error=None):
         if 'Save' in request.form:
             error = add_new_incident(username)
 
+            # flash message if no errors
+            if not error:
+                flash('Incident successfully created.')
+
         # if user canceled or there is no errors return to menu
         if 'Cancel' in request.form or not error:
-            flash('Incident successfully created.')
             return redirect(url_for('menu'))
 
         # if user has an error then save id from the form

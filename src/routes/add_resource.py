@@ -40,9 +40,12 @@ def add_resource_route(error=None):
         if 'submit' in request.form:
             error = add_rsrce(username, esfs, costs)
 
+            # flash message if no errors
+            if not error:
+                flash('Resource successfully created.')
+
         # if user canceled or there is no error return to menu
         if 'cancel' in request.form or not error:
-            flash('Resource successfully created.')
             return redirect(url_for('menu'))
 
         # pull resource id from the form if exists
