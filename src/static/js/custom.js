@@ -55,9 +55,11 @@ function validateForm(submit_val) {
 
     // regex patterns
     var namePattern = /[\w \-\.]+/;
-    var latPattern = /^-?([1-8]?[1-9]|[1-9]0)\.\d{1,6}$/;
-    var longPattern = /^-?(1[1-8][1-9]|[0-9]{1,2})\.\d{1,6}$/;
+    var latPattern = /^-?([1-8]?[0-9]|[1-9]0)\.\d{1,6}$/;
+    var longPattern = /^-?(1[0-8][0-9]|[0-9]{1,2})\.\d{1,6}$/;
     var amountPattern = /[\d]+(\.[\d]{2})?/;
+    var descPattern = /^[\w \-\.]+/;
+    var datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
     // validate name
     if (name_sel.exists() && name_sel.val() == "") {
@@ -104,6 +106,24 @@ function validateForm(submit_val) {
         return false;
     } else if (amount_sel.exists() && parseFloat(amount_sel.val()) < 0) {
         header_sel.after(buildError('Amount must be positive'))
+        return false;
+    }
+
+    // validate date
+    if (date_sel.exists() && date_sel.val() == "") {
+        header_sel.after(buildError('Please enter a date'));
+        return false;
+    } else if (date_sel.exists() && !datePattern.test(date_sel.val())) {
+        header_sel.after(buildError('Please enter date like MM/DD/YYYY'));
+        return false;
+    }
+
+    // validate description
+    if (desc_sel.exists() && desc_sel.val() == "") {
+        header_sel.after(buildError('Please enter a description'));
+        return false;
+    } else if (desc_sel.exists() && !descPattern.test(desc_sel.val())) {
+        header_sel.after(buildError('Please enter a valid description'));
         return false;
     }
 

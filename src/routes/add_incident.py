@@ -1,6 +1,7 @@
 from re import compile, match
 from string import Template
 from uuid import uuid4
+from datetime import datetime
 
 from flask import render_template, request, session, redirect, url_for, abort
 
@@ -65,18 +66,17 @@ def add_new_incident(username):
     lng = request.form['long']
 
     # validate lat and long
-    lat_regex = compile('^-?([1-8]?[1-9]|[1-9]0)\.\d{1,6}$')
-    long_regex = compile('^-?(1[1-8][1-9]|[0-9]{1,2})\.\d{1,6}$')
+    lat_regex = compile('^-?([1-8]?[0-9]|[1-9]0)\.\d{1,6}$')
+    long_regex = compile('^-?(1[0-8][0-9]|[0-9]{1,2})\.\d{1,6}$')
 
     if not match(long_regex, lng) or not match(lat_regex, lat):
         return "Invalid latitude/longitude format"
 
     # validate incident date
-    from datetime import datetime
     try:
-        datetime.strptime(incident_date, "%m/%d/%Y")
+        datetime.strptime(incident_date, '%Y-%m-%d')
     except ValueError:
-        return "Invalid incident date format. Please input MM/DD/YYYY"
+        return "Invalid incident date format. Please input YYYY-MM-DD"
 
     # SQL template
     t = Template("""
