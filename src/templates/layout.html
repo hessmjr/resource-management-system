@@ -17,5 +17,20 @@
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"/>
 
 </head>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="row">
+      <div class="col s12 center">
+        <ul class="red-text">
+          {% for message in messages %}
+            <li><strong>{{ message }}</strong></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% endif %}
+{% endwith %}
+
 {% block body %}{% endblock %}
 </html>

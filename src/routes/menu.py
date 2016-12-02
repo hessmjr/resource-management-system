@@ -5,7 +5,7 @@ from flask import render_template, session
 from src.database import get_db, query_db
 
 
-def menu_route(message=None):
+def menu_route():
     """
     Handler for menu page
     :return: rendered template for url
@@ -27,7 +27,7 @@ def menu_route(message=None):
             if a is not None:
                 details[b[0]] = a
 
-    return render_template("menu.html", details=details, message=message)
+    return render_template("menu.html", details=details)
 
 
 def get_user_details_query(username):

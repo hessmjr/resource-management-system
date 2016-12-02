@@ -23,7 +23,7 @@ def add_resource_route(error=None):
     username = session.get('username')
 
     # create resource id
-    resource_id = int(uuid4().int / 10000000000000000000000.0)
+    resource_id = int(uuid4().int / 10.0**29)
 
     # build new resource form for user
     if request.method == 'GET':

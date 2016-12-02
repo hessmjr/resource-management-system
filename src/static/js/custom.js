@@ -114,7 +114,7 @@ function validateForm(submit_val) {
         header_sel.after(buildError('Please enter a date'));
         return false;
     } else if (date_sel.exists() && !datePattern.test(date_sel.val())) {
-        header_sel.after(buildError('Please enter date like MM/DD/YYYY'));
+        header_sel.after(buildError('Please enter date like YYYY-MM-DD'));
         return false;
     }
 

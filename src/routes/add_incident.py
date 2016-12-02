@@ -1,9 +1,9 @@
+from datetime import datetime
 from re import compile, match
 from string import Template
 from uuid import uuid4
-from datetime import datetime
 
-from flask import render_template, request, session, redirect, url_for, abort
+from flask import *
 
 from src.database import commit_db
 
@@ -15,7 +15,7 @@ def add_incident_route(error=None):
     """
     # get owner and create ID
     username = session.get('username')
-    incident_id = int(uuid4().int / 10000000000000000000000.0)
+    incident_id = int(uuid4().int / 10.0**29)
 
     # build new incident form for user
     if request.method == 'GET':
@@ -33,6 +33,7 @@ def add_incident_route(error=None):
 
         # if user canceled or there is no errors return to menu
         if 'Cancel' in request.form or not error:
+            flash('Resource successfully created.')
             return redirect(url_for('menu'))
 
         # if user has an error then save id from the form
