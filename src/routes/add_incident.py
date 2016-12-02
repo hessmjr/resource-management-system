@@ -33,7 +33,7 @@ def add_incident_route(error=None):
 
         # if user canceled or there is no errors return to menu
         if 'Cancel' in request.form or not error:
-            flash('Resource successfully created.')
+            flash('Incident successfully created.')
             return redirect(url_for('menu'))
 
         # if user has an error then save id from the form
@@ -90,7 +90,7 @@ def add_new_incident(username):
     query = t.safe_substitute({'incident_id': incident_id, 'username': username,
                                'description': description, 'latitude': lat,
                                'longitude': lng, 'incident_date': incident_date})
-    print query
+
     # commit and return to user
     commit_db(query)
     return None

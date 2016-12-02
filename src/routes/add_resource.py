@@ -2,7 +2,7 @@ from re import compile, match
 from string import Template
 from uuid import uuid4
 
-from flask import render_template, request, session, redirect, url_for, abort
+from flask import *
 
 from src.database import query_db, commit_db
 
@@ -42,6 +42,7 @@ def add_resource_route(error=None):
 
         # if user canceled or there is no error return to menu
         if 'cancel' in request.form or not error:
+            flash('Resource successfully created.')
             return redirect(url_for('menu'))
 
         # pull resource id from the form if exists
