@@ -17,16 +17,15 @@ INSERT INTO `resource` (`resource_id`,`cost_time_period_id`,`username`,`name`,`m
 INSERT INTO `resource` (`resource_id`,`cost_time_period_id`,`username`,`name`,`model`,`latitude`,`longitude`,`amount`,`primary_esf_id`) VALUES ('2147483644',2,'user1','Car','Ferrari',11,11,2000,1);
 
 -- Incidents --
-INSERT INTO `incident` (`incident_id`,`username`,`description`,`latitude`,`longitude`,`incident_date`) VALUES (2147483647,'user2','Hurricane',15,15,'2016-11-02 00:00:00');
-INSERT INTO `incident` (`incident_id`,`username`,`description`,`latitude`,`longitude`,`incident_date`) VALUES (2147483646,'user1','Flood',19,21,'2000-11-02 00:00:00');
-INSERT INTO `incident` (`incident_id`,`username`,`description`,`latitude`,`longitude`,`incident_date`) VALUES (2147483645,'user1','Election',1,1,'1994-11-02 00:00:00');
+INSERT INTO `incident` (`incident_id`,`username`,`description`,`latitude`,`longitude`,`incident_date`) VALUES ('2147483647','user2','Hurricane',15,15,'2016-11-02');
+INSERT INTO `incident` (`incident_id`,`username`,`description`,`latitude`,`longitude`,`incident_date`) VALUES ('2147483646','user1','Flood',19,21,'2000-11-02');
+INSERT INTO `incident` (`incident_id`,`username`,`description`,`latitude`,`longitude`,`incident_date`) VALUES ('2147483645','user1','Election',1,1,'1994-11-02');
 
 -- Resource Requests --
-INSERT INTO `resource_request` (`resource_request_status_id`, `incident_id`, `resource_id`) VALUES (1, 2147483647, '2147483641');
-INSERT INTO `resource_request` (`resource_request_status_id`, `incident_id`, `resource_id`, `start_date`, `return_by_date`) VALUES (2, 2147483647, '2147483642', CURRENT_DATE, CURRENT_DATE + INTERVAL 5 DAY);
-INSERT INTO `resource_request` (`resource_request_status_id`, `incident_id`, `resource_id`, `start_date`, `return_by_date`) VALUES (3, 2147483647, '2147483643', CURRENT_DATE - INTERVAL 5 DAY, CURRENT_DATE + 10 DAY);
-INSERT INTO `resource_request` (`resource_request_status_id`, `incident_id`, `resource_id`, `start_date`, `return_by_date`) VALUES (4, 2147483647, '2147483644', CURRENT_DATE - INTERVAL 15 DAY, CURRENT_DATE + 5 DAY);
-
+INSERT INTO `resource_request` (`resource_request_status_id`, `incident_id`, `resource_id`) VALUES (1, '2147483647', '2147483641');
+INSERT INTO `resource_request` (`resource_request_status_id`, `incident_id`, `resource_id`, `start_date`, `return_by_date`) VALUES (2, '2147483647', '2147483642', CURRENT_DATE, CURRENT_DATE + INTERVAL 5 DAY);
+INSERT INTO `resource_request` (`resource_request_status_id`, `incident_id`, `resource_id`, `start_date`, `return_by_date`) VALUES (3, '2147483647', '2147483643', CURRENT_DATE - INTERVAL 5 DAY, CURRENT_DATE + INTERVAL 10 DAY);
+INSERT INTO `resource_request` (`resource_request_status_id`, `incident_id`, `resource_id`, `start_date`, `return_by_date`) VALUES (4, '2147483647', '2147483644', CURRENT_DATE - INTERVAL 15 DAY, CURRENT_DATE + INTERVAL 5 DAY);
 
 -- Resource ESF --
 INSERT INTO `resource_esf` (`resource_id`,`esf_id`) VALUES ('2147483641',1);

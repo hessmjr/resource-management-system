@@ -33,9 +33,25 @@ execute 'run creation script' do
 end
 
 # run creation script on database
-execute 'run creation script' do
+execute 'run insertion script' do
     command "mysql -h 127.0.0.1 -u root --password='password' erms" +
         " < /home/gatech/resource-management-system/src/sql/insert_statements_script.sql"
 end
 
-# TODO implement script to auto-start server
+# supervisor setup
+include_recipe "supervisor"
+
+cookbook_file "/etc/supervisord.conf" do
+    source "supervisord.conf"
+    mode 0644
+end
+
+# Start supervisor to handle start and restarting server
+supervisor_service "bowling-tracker" do
+    action :enable
+    directory "/home/gatech/resource-management-system"
+    command "python src/main.py"
+    stdout_logfile "/home/gatech/resource-management-system/.log"
+    stdout_logfile_maxbytes "50MB"
+    redirect_stderr true
+end
