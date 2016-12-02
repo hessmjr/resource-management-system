@@ -26,8 +26,6 @@ CREATE TABLE IF NOT EXISTS `erms`.`user` (
 ENGINE = InnoDB;
 
 
-
-
 -- -----------------------------------------------------
 -- Table `erms`.`company`
 -- -----------------------------------------------------
@@ -46,8 +44,6 @@ CREATE TABLE IF NOT EXISTS `erms`.`company` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
-
-
 
 
 -- -----------------------------------------------------
@@ -70,8 +66,6 @@ CREATE TABLE IF NOT EXISTS `erms`.`individual` (
 ENGINE = InnoDB;
 
 
-
-
 -- -----------------------------------------------------
 -- Table `erms`.`municipality`
 -- -----------------------------------------------------
@@ -89,8 +83,6 @@ CREATE TABLE IF NOT EXISTS `erms`.`municipality` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
-
-
 
 
 -- -----------------------------------------------------
@@ -111,8 +103,6 @@ CREATE TABLE IF NOT EXISTS `erms`.`government_agency` (
 ENGINE = InnoDB;
 
 
-
-
 -- -----------------------------------------------------
 -- Table `erms`.`incident`
 -- -----------------------------------------------------
@@ -120,12 +110,12 @@ DROP TABLE IF EXISTS `erms`.`incident` ;
 
 
 CREATE TABLE IF NOT EXISTS `erms`.`incident` (
-  `incident_id` CHAR(16) NOT NULL,
+  `incident_id` CHAR(10) NOT NULL,
   `username` VARCHAR(50) NOT NULL,
   `description` VARCHAR(50) NOT NULL,
   `latitude` DECIMAL NOT NULL,
   `longitude` DECIMAL NOT NULL,
-  `incident_date` DATETIME NOT NULL,
+  `incident_date` DATE NOT NULL,
   PRIMARY KEY (`incident_id`),
   INDEX `FK_incident_user_idx` (`username` ASC),
   CONSTRAINT `FK_incident_user`
@@ -134,8 +124,6 @@ CREATE TABLE IF NOT EXISTS `erms`.`incident` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
-
-
 
 
 -- -----------------------------------------------------
@@ -164,10 +152,6 @@ CREATE TABLE IF NOT EXISTS `erms`.`esf` (
 ENGINE = InnoDB;
 
 
-
-
-
-
 -- -----------------------------------------------------
 -- Table `erms`.`resource`
 -- -----------------------------------------------------
@@ -175,7 +159,7 @@ DROP TABLE IF EXISTS `erms`.`resource` ;
 
 
 CREATE TABLE IF NOT EXISTS `erms`.`resource` (
-  `resource_id` CHAR(16) NOT NULL,
+  `resource_id` CHAR(10) NOT NULL,
   `cost_time_period_id` INT NOT NULL,
   `username` VARCHAR(45) NOT NULL,
   `name` VARCHAR(45) NOT NULL,
@@ -208,7 +192,6 @@ CREATE TABLE IF NOT EXISTS `erms`.`resource` (
 ENGINE = InnoDB;
 
 
-
 -- -----------------------------------------------------
 -- Table `erms`.`resource_esf`
 -- -----------------------------------------------------
@@ -232,6 +215,7 @@ CREATE TABLE IF NOT EXISTS `erms`.`resource_esf` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+
 -- -----------------------------------------------------
 -- Table `erms`.`resource_request_status`
 -- -----------------------------------------------------
@@ -243,8 +227,6 @@ CREATE TABLE IF NOT EXISTS `erms`.`resource_request_status` (
   `status` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`resource_request_status_id`))
 ENGINE = InnoDB;
-
-
 
 
 -- -----------------------------------------------------
@@ -327,35 +309,38 @@ ENGINE = InnoDB;
 -- Data for table `erms`.`cost_time_period`
 -- -----------------------------------------------------
 START TRANSACTION;
+
 USE `erms`;
+
 INSERT INTO `erms`.`cost_time_period` (`cost_time_period_id`, `time_period`) VALUES (1, 'Hour');
 INSERT INTO `erms`.`cost_time_period` (`cost_time_period_id`, `time_period`) VALUES (2, 'Day');
 INSERT INTO `erms`.`cost_time_period` (`cost_time_period_id`, `time_period`) VALUES (3, 'Week');
 
-
 COMMIT;
+
 
 -- -----------------------------------------------------
 -- Data for table `erms`.`resource_request_status`
 -- -----------------------------------------------------
 START TRANSACTION;
+
 USE `erms`;
+
 INSERT INTO `erms`.`resource_request_status` (`resource_request_status_id`, `status`) VALUES (1, 'New');
 INSERT INTO `erms`.`resource_request_status` (`resource_request_status_id`, `status`) VALUES (2, 'Deployed');
 INSERT INTO `erms`.`resource_request_status` (`resource_request_status_id`, `status`) VALUES (3, 'Rejected');
 INSERT INTO `erms`.`resource_request_status` (`resource_request_status_id`, `status`) VALUES (4, 'Returned');
 
-
 COMMIT;
-
-
 
 
 -- -----------------------------------------------------
 -- Data for table `erms`.`esf`
 -- -----------------------------------------------------
 START TRANSACTION;
+
 USE `erms`;
+
 INSERT INTO `erms`.`esf` (`esf_id`, `description`) VALUES (1, 'Transportation');
 INSERT INTO `erms`.`esf` (`esf_id`, `description`) VALUES (2, 'Communications');
 INSERT INTO `erms`.`esf` (`esf_id`, `description`) VALUES (3, 'Public Works and Engineering');
@@ -372,9 +357,7 @@ INSERT INTO `erms`.`esf` (`esf_id`, `description`) VALUES (13, 'Public Safety an
 INSERT INTO `erms`.`esf` (`esf_id`, `description`) VALUES (14, 'Long-Term Community Recovery');
 INSERT INTO `erms`.`esf` (`esf_id`, `description`) VALUES (15, 'External Affairs');
 
-
 COMMIT;
-
 
 
 -- -----------------------------------------------------

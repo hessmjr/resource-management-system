@@ -15,7 +15,7 @@ def add_incident_route(error=None):
     """
     # get owner and create ID
     username = session.get('username')
-    incident_id = int(uuid4().int >> 96)
+    incident_id = int(uuid4().int / 10000000000000000000000.0)
 
     # build new incident form for user
     if request.method == 'GET':
