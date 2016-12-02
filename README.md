@@ -40,7 +40,7 @@ The application should be reachable from your browser at `http://localhost:5000/
 
 - [x] clean up
 - [x] fix UUID bug
-- [ ] consolidate custom JS
+- [x] consolidate custom JS
 - [ ] fix date bug
 - [ ] resources available NOW when not bug
 - [x] totals at bottom of resource report
