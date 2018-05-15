@@ -2,10 +2,10 @@
 FROM mysql:5.6
 
 # Set root MySQL password
-ENV MYSQL_ROOT_PASSWORD datafiniti
+ENV MYSQL_ROOT_PASSWORD root
 
 # Set (and create) mysql database
-ENV MYSQL_DATABASE datafiniti
+ENV MYSQL_DATABASE password
 
 # Add Schema to docker entrypoint to seed db
 ADD src/sql/creation_script.sql /docker-entrypoint-initdb.d

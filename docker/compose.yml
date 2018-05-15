@@ -1,12 +1,14 @@
 version: '3'
 services:
     web:
-        build: .
+        build:
+            context: ../
+            dockerfile: docker/Dockerfile
         ports:
-            - "80:80"
+            - "80:8080"
     mysql:
         build:
             context: ../
-            dockerfile: dockerfiles/Dockerfile-MySQL
+            dockerfile: docker/Dockerfile-MySQL
         ports:
             - "3306:3306"
