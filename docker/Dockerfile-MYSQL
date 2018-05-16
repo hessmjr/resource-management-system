@@ -2,10 +2,10 @@
 FROM mysql:5.6
 
 # Set root MySQL password
-ENV MYSQL_ROOT_PASSWORD root
+ENV MYSQL_ROOT_PASSWORD password
 
 # Set (and create) mysql database
-ENV MYSQL_DATABASE password
+ENV MYSQL_DATABASE erms
 
 # Add Schema to docker entrypoint to seed db
 ADD src/sql/creation_script.sql /docker-entrypoint-initdb.d

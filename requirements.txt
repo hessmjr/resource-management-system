@@ -1,2 +1,3 @@
 Flask==0.11.1
 dbConnect==1.6.0
+mysql-connector-python>=1.0.0

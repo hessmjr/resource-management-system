@@ -1,4 +1,5 @@
 # Use an official Python runtime as a parent image
+FROM ubuntu:14.04
 FROM python:2.7-slim
 
 # Set the working directory to top level
@@ -15,6 +16,9 @@ EXPOSE 80
 
 ## Define environment variable
 #ENV NAME World
+
+RUN apt-get update
+RUN apt-get install -y python-mysql.connector
 
 # Run app.py when the container launches
 CMD ["python", "src/main.py"]
