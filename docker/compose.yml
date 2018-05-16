@@ -6,9 +6,22 @@ services:
             dockerfile: docker/Dockerfile
         ports:
             - "5000:5000"
+
+        networks:
+            devnet:
+                aliases:
+                    - mysql
     mysql:
         build:
             context: ../
             dockerfile: docker/Dockerfile-MySQL
         ports:
             - "3306:3306"
+        networks:
+            devnet:
+                aliases:
+                    - mysql
+
+
+networks:
+    devnet:
