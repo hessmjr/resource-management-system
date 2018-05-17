@@ -21,8 +21,8 @@ install:
   # #   sudo apt-get -o Dpkg::Options::="--force-confdef" \
   # #    -o Dpkg::Options::="--force-confold" --assume-yes install docker-engine
   # - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
-  - sudo apt update
-  - sudo apt upgrade docker
+  - sudo apt update -y
+  - sudo apt install --only-upgrade docker-ce -y
   - docker version
   # Update docker-compose via pip
   - sudo pip install docker-compose
