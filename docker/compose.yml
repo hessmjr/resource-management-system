@@ -1,4 +1,8 @@
 version: '3'
+
+networks:
+    devnet:
+
 services:
     web:
         build:
@@ -14,14 +18,10 @@ services:
     mysql:
         build:
             context: ../
-            dockerfile: docker/Dockerfile-MySQL
+            dockerfile: docker/Dockerfile_MySQL
         ports:
             - "3306:3306"
         networks:
             devnet:
                 aliases:
                     - mysql
-
-
-networks:
-    devnet:

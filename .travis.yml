@@ -4,40 +4,31 @@ language: python
 
 dist: trusty
 service:
-  - docker
+    - docker
 
 python:
-  - "2.7"
+    - "2.7"
 
 install:
-  # - >
-  #   curl -sSL "https://get.docker.com/gpg" |
-  #    sudo -E apt-key add -
-  # - >
-  #   echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" |
-  #    sudo tee -a /etc/apt/sources.list
-  # - sudo apt-get update
-  # # - >
-  # #   sudo apt-get -o Dpkg::Options::="--force-confdef" \
-  # #    -o Dpkg::Options::="--force-confold" --assume-yes install docker-engine
-  # - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
-  - sudo apt update -y
-  - sudo apt install --only-upgrade docker-ce -y
-  - docker version
-  # Update docker-compose via pip
-  - sudo pip install docker-compose
-  - docker-compose version
+   # update the docker version
+   - sudo apt update -y
+   - sudo apt install --only-upgrade docker-ce -y
+   - docker version
 
-  # add project requirements
-  - pip install -r requirements.txt
+   # Update docker-compose via pip
+   - sudo pip install docker-compose
+   - docker-compose version
+
+   # add project requirements
+   - pip install -r requirements.txt
 
 before_script:
-  - docker-compose -f docker/compose.yml up --build -d
+    - docker-compose -f docker/compose.yml up --build -d
 
 script: python src/test.py
 
 after_script:
-  - docker-compose -f docker/compose.yml down
+    - docker-compose -f docker/compose.yml down
 
 notifications:
-  email: false
+    email: false
