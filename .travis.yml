@@ -4,8 +4,10 @@ language: python
 
 dist: trusty
 
+python:
+  - "2.7"
+
 install:
-  # Update docker-engine using Ubuntu 'trusty' apt repo
   - >
     curl -sSL "https://get.docker.com/gpg" |
      sudo -E apt-key add -
@@ -21,14 +23,11 @@ install:
   - sudo pip install docker-compose
   - docker-compose version
 
-python:
-  - "2.7"
-
-install:
+  # add project requirements
   - pip install -r requirements.txt
 
 before_script:
-  - docker-compose -f docker/compose.yml up -d
+  - docker-compose -f docker/compose.yml up --build -d
 
 script: python src/test.py
 
