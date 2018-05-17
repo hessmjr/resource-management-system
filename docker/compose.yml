@@ -20,7 +20,7 @@ services:
             context: ../
             dockerfile: docker/Dockerfile_MySQL
         ports:
-            - "3306:23306"
+            - "23306:3306"
         networks:
             devnet:
                 aliases:
