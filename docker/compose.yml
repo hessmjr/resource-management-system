@@ -10,7 +10,7 @@ services:
         networks:
             devnet:
                 aliases:
-                    - web
+                    - mysql
     mysql:
         build:
             context: ../
