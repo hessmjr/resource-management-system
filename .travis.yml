@@ -28,12 +28,12 @@ install:
   - pip install -r requirements.txt
 
 before_script:
-  - docker-compose up --build -d
+  - docker-compose -f docker/compose.yml up --build -d
 
 script: python src/test.py
 
 after_script:
-  - docker-compose down
+  - docker-compose -f docker/compose.yml down
 
 notifications:
   email: false
