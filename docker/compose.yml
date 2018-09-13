@@ -5,6 +5,7 @@ networks:
 
 services:
     web:
+        container_name: rms-web
         build:
             context: ../
             dockerfile: docker/Dockerfile
@@ -14,8 +15,9 @@ services:
         networks:
             devnet:
                 aliases:
-                    - mysql
+                    - web
     mysql:
+        container_name: rms-mysql
         build:
             context: ../
             dockerfile: docker/Dockerfile_MySQL
