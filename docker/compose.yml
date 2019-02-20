@@ -5,17 +5,18 @@ networks:
 
 services:
     web:
-        container_name: rms-web
+        container_name: app
         build:
             context: ../
             dockerfile: docker/Dockerfile
         ports:
             - "5000:5000"
-
+        volumes:
+            - ../:/code
         networks:
             devnet:
                 aliases:
-                    - web
+                    - app
     mysql:
         container_name: rms-mysql
         build:
