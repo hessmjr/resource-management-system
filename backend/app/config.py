@@ -8,7 +8,15 @@ from dbConnect import DBConnect
 
 class Config:
     """Base configuration class."""
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
+    env = os.environ.get('FLASK_ENV', 'production')
+    _secret_key = os.environ.get('SECRET_KEY')
+    if env == 'development':
+        SECRET_KEY = _secret_key or 'dev-secret-key-change-in-production'
+    else:
+        if not _secret_key:
+            raise RuntimeError("SECRET_KEY environment variable must be set in non-development environments")
+        SECRET_KEY = _secret_key
+    
     DATABASE_CONFIG_FILE = os.environ.get('DATABASE_CONFIG_FILE') or 'credentials.json'
 
 

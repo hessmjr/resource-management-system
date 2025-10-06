@@ -21,7 +21,7 @@
             action="{{ url_for('add_incident') }}" method="POST"
             onsubmit="return validateForm(this.submitted);">
 
-        <!-- auto assign unique numneric ID upon save-->
+        <!-- auto assign unique numeric ID upon save-->
         <label for="incident_id">Incident ID</label>
         <input id="incident_id" class="input" name="incident_id" readonly="readonly"
                type="text" value="{{ incident_id }}" size="30" />

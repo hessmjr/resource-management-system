@@ -54,7 +54,7 @@ class ResourceService:
     @staticmethod
     def validate_model(model):
         """Validate model format."""
-        model_regex = re.compile(r'[\w -.]+')
+        model_regex = re.compile(r'[\w .-]+')
         return bool(model_regex.match(model))
     
     @staticmethod
@@ -261,16 +261,20 @@ class ResourceService:
         """Convert distance string to float for database queries."""
         max_distance = 999999
         
-        if not distance or not distance.isdigit():
+        if not distance:
             return max_distance
         
-        distance = float(distance)
+        try:
+            distance_value = float(distance)
+        except (TypeError, ValueError):
+            return max_distance
+        
         delta = 0.000001
         
-        if distance - delta < delta:
+        if distance_value - delta < delta:
             return max_distance
         
-        return distance
+        return distance_value
     
     # Additional search methods would be implemented similarly...
     @staticmethod

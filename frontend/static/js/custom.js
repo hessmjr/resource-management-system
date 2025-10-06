@@ -1,6 +1,8 @@
 
 $(document).ready(function() {
-    $('select').material_select();
+    // Initialize Materialize components
+    var elems = document.querySelectorAll('select');
+    var instances = M.FormSelect.init(elems);
 });
 
 
@@ -9,25 +11,7 @@ $.fn.exists = function () {
 }
 
 
-$( function () {
-
-    $("#add-capability").on("click", addCapability);
-
-    function addCapability(e) {
-        e.preventDefault();
-        var $newCapability = $("#new-capability");
-
-        var newCapabilityVal = $newCapability.val();
-        if (newCapabilityVal != "") {
-            var selectList = $("#capabilities");
-            var newOption = "<option selected='selected' value='" +
-                newCapabilityVal + "'>" + newCapabilityVal + "</option>";
-            selectList.append(newOption);
-            $newCapability.val("");
-        }
-    }
-
-});
+// Capability handler is now implemented inline in templates for better modularity
 
 function validateForm(submit_val) {
 
@@ -99,10 +83,10 @@ function validateForm(submit_val) {
 
     // validate the amount
     if (amount_sel.exists() && amount_sel.val() == "") {
-        header_sel.after(buildError('Please enter a amount'));
+        header_sel.after(buildError('Please enter an amount'));
         return false;
     } else if (amount_sel.exists() && !amountPattern.test(amount_sel.val())) {
-        header_sel.after(buildError('Please enter a amount'));
+        header_sel.after(buildError('Please enter an amount'));
         return false;
     } else if (amount_sel.exists() && parseFloat(amount_sel.val()) < 0) {
         header_sel.after(buildError('Amount must be positive'))
