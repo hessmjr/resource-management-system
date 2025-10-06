@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Search Resources - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col s12 center">
+            <h3 class="blue-grey-text">Search Resources</h3>
+            <hr class="blue-grey">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 m10 offset-m1">
+            <div class="card">
+                <div class="card-content">
+                    <form id="search-resource" action="{{ url_for('api.search_resources') }}" method="POST">
+                        <!-- Keyword Search -->
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">search</i>
+                                <input id="keyword" name="keyword" type="text">
+                                <label for="keyword">Keyword (searches name, model, and capabilities)</label>
+                            </div>
+                        </div>
+
+                        <!-- ESF Selection -->
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">category</i>
+                                <select name="esf" id="esf">
+                                    <option value="" disabled selected>Choose ESF (optional)</option>
+                                    {% for esf in esfs %}
+                                        <option value="{{ esf[0] }}">#{{ esf[0] }} - {{ esf[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="esf">Emergency Support Function</label>
+                            </div>
+                        </div>
+
+                        <!-- Incident Search -->
+                        <div class="row">
+                            <div class="col s12">
+                                <h5>Incident Search</h5>
+                                <div class="row">
+                                    <div class="input-field col s12 m6">
+                                        <i class="material-icons prefix">report_problem</i>
+                                        <select name="incident_id" id="incident">
+                                            <option value="" disabled selected>Choose incident (optional)</option>
+                                            {% for incident in incidents %}
+                                                <option value="{{ incident[0] }}">({{ incident[0] }}) {{ incident[1] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="incident">Incident</label>
+                                    </div>
+                                    <div class="input-field col s12 m6">
+                                        <i class="material-icons prefix">place</i>
+                                        <input id="distance" name="distance" type="text">
+                                        <label for="distance">Distance (miles)</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row center">
+                            <button class="btn waves-effect waves-light red" type="submit" name="cancel">
+                                Cancel
+                                <i class="material-icons right">cancel</i>
+                            </button>
+                            <button class="btn waves-effect waves-light blue" type="submit" name="submit">
+                                Search
+                                <i class="material-icons right">search</i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Materialize components
+    var elems = document.querySelectorAll('select');
+    var instances = M.FormSelect.init(elems);
+});
+</script>
+{% endblock %}

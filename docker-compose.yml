@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: erms_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: erms
+      MYSQL_USER: erms_user
+      MYSQL_PASSWORD: erms_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./src/sql:/docker-entrypoint-initdb.d
+    networks:
+      - erms_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: erms_backend
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=backend/run.py
+      - FLASK_ENV=development
+      - DATABASE_CONFIG_FILE=/app/credentials.json
+    volumes:
+      - ./backend:/app/backend
+      - ./credentials.json:/app/credentials.json
+      - ./src/sql:/app/sql
+    depends_on:
+      - mysql
+    networks:
+      - erms_network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: erms_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+    networks:
+      - erms_network
+
+volumes:
+  mysql_data:
+
+networks:
+  erms_network:
+    driver: bridge

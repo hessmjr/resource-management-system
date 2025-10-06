@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Add Resource - {{ super() }}{% endblock %}
+
+{% block extra_scripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/custom.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col s12 center">
+            <h3 class="blue-grey-text">Add New Resource</h3>
+            <hr class="blue-grey">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 m10 offset-m1">
+            <div class="card">
+                <div class="card-content">
+                    <form id="add-resource" action="{{ url_for('api.add_resource') }}" method="POST">
+                        <!-- Resource ID and Owner -->
+                        <div class="row">
+                            <div class="col s12 m6">
+                                <div class="input-field">
+                                    <input id="resource_id" name="resource_id" type="text" readonly value="{{ resource_id }}">
+                                    <label for="resource_id">Resource ID</label>
+                                </div>
+                            </div>
+                            <div class="col s12 m6">
+                                <div class="input-field">
+                                    <input id="owner_name" name="owner" type="text" readonly value="{{ owner_name }}">
+                                    <label for="owner_name">Owner</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resource Name -->
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="name" name="name" type="text" required>
+                                <label for="name">Resource Name *</label>
+                            </div>
+                        </div>
+
+                        <!-- Primary ESF -->
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <select name="esf_id" id="primary-esf" required>
+                                    <option value="" disabled selected>Choose primary ESF *</option>
+                                    {% for esf in esfs %}
+                                        <option value="{{ esf[0] }}">#{{ esf[0] }} - {{ esf[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="primary-esf">Primary ESF *</label>
+                            </div>
+                        </div>
+
+                        <!-- Additional ESFs -->
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <select id="additional-esf" name="second_esfs" multiple>
+                                    <option value="" disabled selected>Choose additional ESFs (optional)</option>
+                                    {% for esf in esfs %}
+                                        <option value="{{ esf[0] }}">#{{ esf[0] }} - {{ esf[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="additional-esf">Additional ESFs</label>
+                            </div>
+                        </div>
+
+                        <!-- Model -->
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="model" name="model" type="text" required>
+                                <label for="model">Model *</label>
+                            </div>
+                        </div>
+
+                        <!-- Capabilities -->
+                        <div class="row">
+                            <div class="col s12">
+                                <h5>Capabilities</h5>
+                                <div class="row">
+                                    <div class="col s1">
+                                        <button class="btn-floating waves-effect waves-light blue" id="add-capability" type="button">
+                                            <i class="material-icons">add</i>
+                                        </button>
+                                    </div>
+                                    <div class="input-field col s5">
+                                        <input id="new-capability" type="text">
+                                        <label for="new-capability">New Capability</label>
+                                    </div>
+                                    <div class="col s6">
+                                        <label for="capabilities">Current Capabilities:</label>
+                                        <select class="browser-default" id="capabilities" name="capabilities" multiple size="5">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="row">
+                            <div class="col s12">
+                                <h5>Home Location</h5>
+                                <div class="row">
+                                    <div class="input-field col s6">
+                                        <input id="lat" name="lat" type="text" required>
+                                        <label for="lat">Latitude *</label>
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <input id="long" name="long" type="text" required>
+                                        <label for="long">Longitude *</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cost -->
+                        <div class="row">
+                            <div class="col s12">
+                                <h5>Cost Information</h5>
+                                <div class="row">
+                                    <div class="input-field col s6">
+                                        <input id="amount" name="cost" type="text" required>
+                                        <label for="amount">Amount in USD *</label>
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <select name="cost_id" id="cost_id" required>
+                                            <option value="" disabled selected>Choose time period *</option>
+                                            {% for cost in cost_types %}
+                                                <option value="{{ cost[0] }}">{{ cost[1] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="cost_id">Per</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row center">
+                            <button class="btn waves-effect waves-light red" type="submit" name="cancel">
+                                Cancel
+                                <i class="material-icons right">cancel</i>
+                            </button>
+                            <button class="btn waves-effect waves-light green" type="submit" name="submit">
+                                Submit
+                                <i class="material-icons right">send</i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Materialize components
+    var elems = document.querySelectorAll('select');
+    var instances = M.FormSelect.init(elems);
+    
+    // Add capability functionality
+    document.getElementById('add-capability').addEventListener('click', function() {
+        var input = document.getElementById('new-capability');
+        var select = document.getElementById('capabilities');
+        var value = input.value.trim();
+        
+        if (value) {
+            var option = document.createElement('option');
+            option.value = value;
+            option.text = value;
+            option.selected = true;
+            select.appendChild(option);
+            input.value = '';
+        }
+    });
+});
+</script>
+{% endblock %}

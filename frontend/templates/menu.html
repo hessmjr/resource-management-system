@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Main Menu - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col s12 center">
+            <h3 class="blue-grey-text">ERMS Main Menu</h3>
+            <hr class="blue-grey">
+        </div>
+    </div>
+
+    <!-- User Details Card -->
+    {% if details|length > 0 %}
+        <div class="row">
+            <div class="col s12 m8 offset-m2">
+                <div class="card blue-grey lighten-5">
+                    <div class="card-content">
+                        <span class="card-title">
+                            <i class="material-icons left">person</i>
+                            User Information
+                        </span>
+                        <div class="row">
+                            <div class="col s12">
+                                <p><strong>Name:</strong> {{ details['name'] }}</p>
+                                {% if details['population_size'] %}
+                                    <p><strong>Population Size:</strong> {{ details['population_size'] }}</p>
+                                {% endif %}
+                                {% if details['headquarters'] %}
+                                    <p><strong>Headquarters:</strong> {{ details['headquarters'] }}</p>
+                                {% endif %}
+                                {% if details['jurisdiction'] %}
+                                    <p><strong>Jurisdiction:</strong> {{ details['jurisdiction'] }}</p>
+                                {% endif %}
+                                {% if details['job_title'] %}
+                                    <p><strong>Job Title:</strong> {{ details['job_title'] }}</p>
+                                {% endif %}
+                                {% if details['hired_date'] %}
+                                    <p><strong>Hired Date:</strong> {{ details['hired_date'] }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Menu Options -->
+    <div class="row">
+        <div class="col s12 m10 offset-m1">
+            <div class="row">
+                <div class="col s12 m6 l4">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons large blue-text">add_circle</i>
+                            <span class="card-title">Add Resource</span>
+                            <p>Add new emergency resources to the system</p>
+                        </div>
+                        <div class="card-action">
+                            <a href="{{ url_for('api.add_resource') }}" class="blue-text">Go to Add Resource</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m6 l4">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons large green-text">report_problem</i>
+                            <span class="card-title">Add Incident</span>
+                            <p>Report new emergency incidents</p>
+                        </div>
+                        <div class="card-action">
+                            <a href="{{ url_for('api.add_incident') }}" class="green-text">Go to Add Incident</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m6 l4">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons large orange-text">search</i>
+                            <span class="card-title">Search Resources</span>
+                            <p>Find and request emergency resources</p>
+                        </div>
+                        <div class="card-action">
+                            <a href="{{ url_for('api.search_resources') }}" class="orange-text">Go to Search</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m6 l4">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons large purple-text">assignment</i>
+                            <span class="card-title">Resource Status</span>
+                            <p>View and manage resource status</p>
+                        </div>
+                        <div class="card-action">
+                            <a href="{{ url_for('api.resource_status') }}" class="purple-text">Go to Status</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m6 l4">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons large teal-text">assessment</i>
+                            <span class="card-title">Resource Report</span>
+                            <p>Generate resource reports</p>
+                        </div>
+                        <div class="card-action">
+                            <a href="{{ url_for('api.resource_report') }}" class="teal-text">Go to Reports</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m6 l4">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons large red-text">exit_to_app</i>
+                            <span class="card-title">Logout</span>
+                            <p>Sign out of the system</p>
+                        </div>
+                        <div class="card-action">
+                            <a href="{{ url_for('auth.logout') }}" class="red-text">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

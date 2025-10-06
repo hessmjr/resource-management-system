@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Search Results - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col s12 center">
+            <h3 class="blue-grey-text">Search Results</h3>
+            <hr class="blue-grey">
+        </div>
+    </div>
+
+    {% if incident %}
+        <div class="row">
+            <div class="col s12">
+                <div class="card blue lighten-5">
+                    <div class="card-content">
+                        <span class="card-title">
+                            <i class="material-icons left">report_problem</i>
+                            Search Results for Incident
+                        </span>
+                        <p><strong>{{ incident[1] }}</strong> (ID: {{ incident[0] }})</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if results|length > 0 %}
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">Found {{ results|length }} Resource(s)</span>
+                        <div class="table-responsive">
+                            <table class="striped highlight">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Resource Name</th>
+                                        <th>Owner</th>
+                                        <th>Cost</th>
+                                        <th>Status</th>
+                                        <th>Next Available</th>
+                                        {% if results[0] and results[0]|length > 7 %}
+                                            <th>Distance</th>
+                                        {% endif %}
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in results %}
+                                        <tr>
+                                            <td><code>{{ result[0] }}</code></td>
+                                            <td><strong>{{ result[1] }}</strong></td>
+                                            <td>{{ result[2] }}</td>
+                                            <td>${{ result[3] }}/{{ result[4] }}</td>
+                                            <td>
+                                                {% if result[5] == 'Available' %}
+                                                    <span class="chip green white-text">Available</span>
+                                                {% elif result[5] == 'Not Available' %}
+                                                    <span class="chip red white-text">Not Available</span>
+                                                {% else %}
+                                                    <span class="chip orange white-text">{{ result[5] }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if result[6] == None %}
+                                                    <span class="green-text">NOW</span>
+                                                {% else %}
+                                                    {{ result[6] }}
+                                                {% endif %}
+                                            </td>
+                                            {% if result[7] %}
+                                                <td>{{ result[7]|round(2, 'floor') }} km</td>
+                                            {% endif %}
+                                            <td>
+                                                <div class="btn-group">
+                                                    <!-- Request action for resources not owned by current user -->
+                                                    {% if username != result[8] %}
+                                                        <a href="/search-resources/request?resource-id={{ result[0] }}&incident-id={{ incident[0] if incident else '' }}" 
+                                                           class="btn-floating waves-effect waves-light blue" title="Request">
+                                                            <i class="material-icons">ring_volume</i>
+                                                        </a>
+                                                    {% elif username == result[8] %}
+                                                        <!-- Deploy action for available resources owned by current user -->
+                                                        {% if result[5] == 'Available' %}
+                                                            <a href="/search-resources/deploy?resource-id={{ result[0] }}&incident-id={{ incident[0] if incident else '' }}" 
+                                                               class="btn-floating waves-effect waves-light green" title="Deploy">
+                                                                <i class="material-icons">launch</i>
+                                                            </a>
+                                                        {% endif %}
+                                                        <!-- Repair action for resources owned by current user -->
+                                                        <a href="/search-resources/repair?resource-id={{ result[0] }}" 
+                                                           class="btn-floating waves-effect waves-light orange" title="Repair">
+                                                            <i class="material-icons">settings</i>
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col s12">
+                <div class="card red lighten-5">
+                    <div class="card-content center">
+                        <i class="material-icons large red-text">search_off</i>
+                        <h5 class="red-text">No Results Found</h5>
+                        <p>Your search did not return any results. Try adjusting your search criteria.</p>
+                        <a href="{{ url_for('api.search_resources') }}" class="btn waves-effect waves-light blue">
+                            Search Again
+                            <i class="material-icons right">search</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Navigation -->
+    <div class="row center">
+        <a href="{{ url_for('api.menu') }}" class="btn waves-effect waves-light blue-grey">
+            <i class="material-icons left">home</i>
+            Back to Menu
+        </a>
+    </div>
+</div>
+{% endblock %}
