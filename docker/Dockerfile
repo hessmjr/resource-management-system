@@ -1,15 +1,40 @@
-# Use an official Python runtime as a parent image
-FROM ubuntu:14.04
-FROM python:2.7-slim
+# Use Python 3.12 Alpine for smaller, more secure image
+FROM python:3.12-alpine
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+# Set working directory
+WORKDIR /app
 
-# Make port available to the world outside this container
+# Install system dependencies
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    mariadb-connector-c-dev \
+    pkgconfig
+
+# Install uv for fast dependency management
+RUN pip install uv
+
+# Copy dependency files
+COPY pyproject.toml ./
+COPY requirements.txt ./
+
+# Install dependencies using uv
+RUN uv pip install --system -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Create non-root user for security
+RUN adduser -D -s /bin/sh appuser && \
+    chown -R appuser:appuser /app
+USER appuser
+
+# Expose port
 EXPOSE 5000
 
-RUN apt-get update
-RUN apt-get install -y python-mysql.connector
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:5000')" || exit 1
 
-# Run app.py when the container launches
+# Run application
 CMD ["python", "src/main.py"]
