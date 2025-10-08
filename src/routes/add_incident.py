@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from flask import *
 
-from src.database import commit_db
+from database import commit_db
 
 
 def add_incident_route(error=None):
@@ -37,7 +37,7 @@ def add_incident_route(error=None):
 
         # if user canceled or there is no errors return to menu
         if 'Cancel' in request.form or not error:
-            return redirect(url_for('menu'))
+            return redirect(url_for('main.menu'))
 
         # if user has an error then save id from the form
         if 'incident_id' in request.form:

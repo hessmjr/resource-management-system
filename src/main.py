@@ -1,126 +1,52 @@
-import os.path
-import sys
+import os
+from typing import Optional
 
 from flask import Flask, session, redirect, url_for, request
+from dotenv import load_dotenv
 
-# necessary to ensure application specific modules are found
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from blueprints.auth import auth_bp
+from blueprints.main import main_bp
+from config import config
 
-from routes.resource_status import resource_status_route, update_status_route
-from routes.login import index_route
-from routes.add_resource import add_resource_route
-from routes.menu import menu_route
-from routes.resource_report import resource_report_route
-from routes.search_resources import search_resources_route
-from routes.add_incident import add_incident_route
-from routes.search_results import user_request, owner_deploy, owner_repair
+# Load environment variables
+load_dotenv()
 
-app = Flask(__name__)
-app.secret_key = os.urandom(24)
+def create_app(config_name: str = 'default') -> Flask:
+    """Application factory pattern."""
+    app = Flask(__name__)
 
-# ###########################
-# Setup all route handling
-# ###########################
+    # Load configuration
+    app.config.from_object(config[config_name])
 
+    # Register blueprints
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(main_bp)
 
+    return app
+
+# Create app instance
+config_name = os.environ.get('FLASK_ENV', 'development')
+app = create_app(config_name)
+
+# Authentication check for all routes
 @app.before_request
-def before_request():
+def before_request() -> Optional[redirect]:
     """
     Before any request check if the user is already logged in.
     """
-    if request.endpoint == 'login' or 'static' in request.url:
-        return
+    # Allow access to auth routes and static files
+    if (request.endpoint and
+        (request.endpoint.startswith('auth.') or
+         request.endpoint == 'static' or
+         (request.url and 'static' in request.url))):
+        return None
 
     # if user is not already logged in redirect to login pages
     if 'username' not in session and 'name' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('auth.login'))
 
-
-@app.route('/', methods=['GET', 'POST'])
-def login():
-    return index_route()
-
-
-@app.route('/menu', methods=['GET'])
-def menu():
-    return menu_route()
-
-
-@app.route('/add-resource', methods=['GET', 'POST'])
-def add_resource():
-    return add_resource_route()
-
-
-@app.route('/add-incident', methods=['GET', 'POST'])
-def add_incident():
-    return add_incident_route()
-
-
-@app.route('/search-resources', methods=['GET', 'POST'])
-def search_resources():
-    return search_resources_route()
-
-
-@app.route('/search-resources/request/', methods=['GET'])
-def search_results_resource_request():
-
-    resource_id = request.args.get('resource-id')
-    incident_id = request.args.get('incident-id')
-
-    return user_request(inc_id=incident_id, res_id=resource_id)
-
-
-@app.route('/search-resources/repair/', methods=['GET'])
-def search_results_resource_repair():
-
-    resource_id = request.args.get('resource-id')
-
-    return owner_repair(res_id=resource_id)
-
-
-@app.route('/search-resources/deploy/', methods=['GET'])
-def search_results_resource_deploy():
-
-    resource_id = request.args.get('resource-id')
-    incident_id = request.args.get('incident-id')
-
-    return owner_deploy(inc_id=incident_id, res_id=resource_id)
-
-
-@app.route('/resource-status', methods=['GET'])
-def resource_status():
-    return resource_status_route()
-
-
-@app.route('/resource-status/deploy', methods=['GET'])
-def deploy_resource():
-    return update_status_route()
-
-
-@app.route('/resource-status/return', methods=['GET'])
-def return_resource():
-    return update_status_route()
-
-
-@app.route('/resource-status/reject', methods=['GET'])
-def reject_resource():
-    return update_status_route()
-
-
-@app.route('/resource-status/request/cancel', methods=['GET'])
-def cancel_resource_request():
-    return update_status_route()
-
-
-@app.route('/resource-status/repair/cancel', methods=['GET'])
-def cancel_resource_repair():
-    return update_status_route()
-
-
-@app.route('/resource-report', methods=['GET'])
-def resource_report():
-    return resource_report_route()
+    return None
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=app.config['DEBUG'], host='0.0.0.0', port=5000)

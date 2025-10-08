@@ -3,7 +3,7 @@ from datetime import datetime
 
 from flask import render_template, request, session, redirect, url_for, abort
 
-from src.database import query_db, commit_db
+from database import query_db, commit_db
 
 
 def resource_status_route(error=None):
@@ -66,7 +66,7 @@ def update_status_route():
         query = sql_template.safe_substitute({'resource_request_id': req_id})
         commit_db(query)
 
-    return redirect(url_for('resource_status'))
+    return redirect(url_for('main.resource_status'))
 
 
 def in_use_sql(username):

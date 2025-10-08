@@ -16,7 +16,7 @@
       <h6><strong>Error:</strong> {{ error }}</h6>  </div></div>{% endif %}
 
     <div class="row">
-      <form class="col s10 offset-s1" id="Search Resource" action="{{ url_for('search_resources') }}" method="POST" >
+      <form class="col s10 offset-s1" id="Search Resource" action="{{ url_for('main.search_resources') }}" method="POST" >
 
         <!-- Searches name, model and the capabilities fields of resources-->
         <div class="row">

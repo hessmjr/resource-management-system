@@ -3,7 +3,7 @@ from string import Template
 
 from flask import redirect, url_for
 
-from src.database import commit_db
+from database import commit_db
 
 
 def user_request(inc_id, res_id):
@@ -29,7 +29,7 @@ def user_request(inc_id, res_id):
 
     # update database with user request and redirect
     commit_db(query)
-    return redirect(url_for('resource_status'))
+    return redirect(url_for('main.resource_status'))
 
 
 def owner_deploy(inc_id, res_id):
@@ -55,7 +55,7 @@ def owner_deploy(inc_id, res_id):
 
     # update database with user request and redirect
     commit_db(query)
-    return redirect(url_for('resource_status'))
+    return redirect(url_for('main.resource_status'))
 
 
 def owner_repair(res_id):
@@ -80,4 +80,4 @@ def owner_repair(res_id):
 
     # update database with user request and redirect
     commit_db(query)
-    return redirect(url_for('resource_status'))
+    return redirect(url_for('main.resource_status'))

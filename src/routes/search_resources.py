@@ -3,7 +3,7 @@ from datetime import datetime
 
 from flask import render_template, request, redirect, url_for, session
 
-from src.database import query_db
+from database import query_db
 
 
 def search_resources_route(error=None):
@@ -28,7 +28,7 @@ def search_resources_route(error=None):
     elif request.method == 'POST':
         # if user cancels then return to menu
         if 'cancel' in request.form:
-            return redirect(url_for('menu'))
+            return redirect(url_for('main.menu'))
 
         # set query params
         esf_id, keyword, distance, inc_id = "", "", "", ""

@@ -36,12 +36,12 @@
 
     <div class="row">
       <div class="col s8 center offset-s2">
-        <a class="menu" href="{{ url_for('add_resource') }}"><div class="card-panel hoverable">Add Resource</div></a>
-        <a class="menu" href="{{ url_for('add_incident') }}"><div class="card-panel hoverable">Add Incident</div></a>
-        <a class="menu" href="{{ url_for('search_resources') }}"><div class="card-panel hoverable">Search Resources</div></a>
-        <a class="menu" href="{{ url_for('resource_status') }}"><div class="card-panel hoverable">Resource Status</div></a>
-        <a class="menu" href="{{ url_for('resource_report') }}"><div class="card-panel hoverable">Resource Report</div></a>
-        <a class="menu" href="{{ url_for('login') }}"><div class="card-panel hoverable">Exit</div></a>
+        <a class="menu" href="{{ url_for('main.add_resource') }}"><div class="card-panel hoverable">Add Resource</div></a>
+        <a class="menu" href="{{ url_for('main.add_incident') }}"><div class="card-panel hoverable">Add Incident</div></a>
+        <a class="menu" href="{{ url_for('main.search_resources') }}"><div class="card-panel hoverable">Search Resources</div></a>
+        <a class="menu" href="{{ url_for('main.resource_status') }}"><div class="card-panel hoverable">Resource Status</div></a>
+        <a class="menu" href="{{ url_for('main.resource_report') }}"><div class="card-panel hoverable">Resource Report</div></a>
+        <a class="menu" href="{{ url_for('auth.login') }}"><div class="card-panel hoverable">Exit</div></a>
       </div>
     </div>
 
