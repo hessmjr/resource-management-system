@@ -1,5 +1,6 @@
 """User service for managing user-related database operations."""
 
+import hashlib
 from ..config import query_db, execute_db
 
 
@@ -15,8 +16,11 @@ class UserService:
         if not user or len(user) < 1:
             return None
             
-        # Check password (in production, use proper password hashing)
-        if user[0][2] != password:
+        # Hash the provided password for comparison
+        password_hash = UserService._hash_password(password)
+        
+        # Check password hash
+        if user[0][2] != password_hash:
             return None
             
         return {
@@ -24,6 +28,11 @@ class UserService:
             'name': user[0][1],
             'password': user[0][2]
         }
+    
+    @staticmethod
+    def _hash_password(password):
+        """Hash a password using SHA-256 (in production, use bcrypt or similar)."""
+        return hashlib.sha256(password.encode()).hexdigest()
     
     @staticmethod
     def get_user_details(username):

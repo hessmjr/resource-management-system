@@ -38,10 +38,13 @@ class ResourceService:
     
     @staticmethod
     def validate_coordinates(lat, lng):
-        """Validate latitude and longitude format."""
-        lat_regex = re.compile(r'^-?([1-8]?[1-9]|[1-9]0)\.\d{1,6}$')
-        lng_regex = re.compile(r'^-?(1[1-8][1-9]|[0-9]{1,2})\.\d{1,6}$')
-        return bool(lat_regex.match(lat) and lng_regex.match(lng))
+        """Validate latitude and longitude values."""
+        try:
+            lat_f = float(lat)
+            lng_f = float(lng)
+        except (TypeError, ValueError):
+            return False
+        return -90.0 <= lat_f <= 90.0 and -180.0 <= lng_f <= 180.0
     
     @staticmethod
     def validate_cost(cost):

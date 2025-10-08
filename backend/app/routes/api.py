@@ -85,12 +85,21 @@ def search_resources():
         }
         
         # Validate distance if provided
-        if search_params['distance'] and not search_params['distance'].isdigit():
-            error = "Distance value must be positive number"
-            return render_template('search_resources.html', 
-                                 esfs=esfs, 
-                                 incidents=incidents, 
-                                 error=error)
+        if search_params['distance']:
+            try:
+                distance_value = float(search_params['distance'])
+                if distance_value < 0:
+                    error = "Distance value must be positive number"
+                    return render_template('search_resources.html', 
+                                         esfs=esfs, 
+                                         incidents=incidents, 
+                                         error=error)
+            except (TypeError, ValueError):
+                error = "Distance value must be a valid number"
+                return render_template('search_resources.html', 
+                                     esfs=esfs, 
+                                     incidents=incidents, 
+                                     error=error)
         
         # Perform search
         results = ResourceService.search_resources(search_params)
