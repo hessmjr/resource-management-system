@@ -38,7 +38,6 @@ Local development example project with modern best practices, not production dep
 
 ### 2.3 Project Structure
 - Restructure with Flask Blueprints
-- Add SQLAlchemy ORM
 - Implement proper configuration management
 
 ## Phase 3: Testing & Documentation (Week 3)

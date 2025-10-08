@@ -2,7 +2,7 @@ from string import Template
 
 from flask import render_template, session
 
-from src.database import query_db
+from database import query_db
 
 
 def resource_report_route():

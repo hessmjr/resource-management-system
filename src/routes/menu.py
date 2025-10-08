@@ -1,11 +1,10 @@
-from string import Template
-
+from typing import Dict, Any
 from flask import render_template, session
 
-from src.database import get_db, query_db
+from database import get_db, query_db
 
 
-def menu_route():
+def menu_route() -> str:
     """
     Handler for menu page
     :return: rendered template for url
@@ -13,28 +12,38 @@ def menu_route():
     # try to get current session user
     username = session.get('username')
 
-    # get user details
-    user_details = query_db(get_user_details_query(username))
+    if not username:
+        return render_template("menu.html", details={})
+
+    # get user details using parameterized query
+    user_details = query_db(_get_user_details_query(), (username,))
     db = get_db()
 
     # ensure there are user details
-    details = {}
-    if len(user_details) > 0:
-        user_details = user_details[0]
+    details: Dict[str, Any] = {}
+    if user_details and len(user_details) > 0:
+        user_row = user_details[0]
+
+        # Get column names from cursor
+        cursor = db.cursor()
+        cursor.execute(_get_user_details_query(), (username,))
+        column_names = [desc[0] for desc in cursor.description]
+        cursor.close()
 
         # remove None values from the query
-        for a, b in zip(user_details, db.cursor.description):
-            if a is not None:
-                details[b[0]] = a
+        for value, column_name in zip(user_row, column_names):
+            if value is not None:
+                details[column_name] = value
 
     return render_template("menu.html", details=details)
 
 
-def get_user_details_query(username):
+def _get_user_details_query() -> str:
     """
-    Creates SQL for getting user details
+    Creates SQL for getting user details using parameterized query
+    :return: SQL query string with parameter placeholder
     """
-    t = Template("""
+    return """
         SELECT
             user.name, company.headquarters, government_agency.jurisdiction,
             municipality.population_size, individual.job_title,
@@ -48,7 +57,5 @@ def get_user_details_query(username):
             ON municipality.username = user.username
         LEFT JOIN individual
             ON individual.username = user.username
-        WHERE user.username = '$username'
-    """)
-
-    return t.safe_substitute({'username': username})
+        WHERE user.username = %s
+    """

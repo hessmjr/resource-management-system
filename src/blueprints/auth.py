@@ -1,11 +1,15 @@
 from typing import Union
-from flask import render_template, request, url_for, redirect, session, Response
+from flask import Blueprint, render_template, request, url_for, redirect, session, Response
 import bcrypt
 
 from database import query_db
 
+auth_bp = Blueprint('auth', __name__)
 
-def index_route() -> Union[str, Response]:
+
+@auth_bp.route('/', methods=['GET', 'POST'])
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login() -> Union[str, Response]:
     """
     Method for handling user login
     :return: rendered template or redirect response
@@ -39,6 +43,16 @@ def index_route() -> Union[str, Response]:
 
     # give user login html
     return render_template('login.html', error=error)
+
+
+@auth_bp.route('/logout')
+def logout() -> Response:
+    """
+    Handle user logout
+    :return: redirect to login page
+    """
+    session.clear()
+    return redirect(url_for('auth.login'))
 
 
 def _verify_password(password: str, hashed_password: str) -> bool:

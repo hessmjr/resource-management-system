@@ -18,7 +18,7 @@
     <div class="row">
 
       <form class="pure-form pure-form-aligned" id="New Incident"
-            action="{{ url_for('add_incident') }}" method="POST"
+            action="{{ url_for('main.add_incident') }}" method="POST"
             onsubmit="return validateForm(this.submitted);">
 
         <!-- auto assign unique numneric ID upon save-->
