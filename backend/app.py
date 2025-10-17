@@ -13,7 +13,9 @@ load_dotenv()
 
 def create_app(config_name: str = 'default') -> Flask:
     """Application factory pattern."""
-    app = Flask(__name__)
+    app = Flask(__name__,
+                template_folder='../frontend/templates',
+                static_folder='../frontend/static')
 
     # Load configuration
     app.config.from_object(config[config_name])
