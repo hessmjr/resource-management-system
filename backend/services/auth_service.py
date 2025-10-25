@@ -3,8 +3,8 @@ Authentication service for handling login/logout logic.
 """
 
 import bcrypt
-from flask import redirect, session, url_for
 from dal.user_dal import UserDAL
+from flask import session
 
 
 class AuthService:
@@ -23,19 +23,19 @@ class AuthService:
         :return: Error message if authentication fails, None if successful
         """
         if not username or not password:
-            return 'Username and password are required'
+            return "Username and password are required"
 
         user = self.user_dal.get_user_by_username(username)
 
         if user is None:
-            return 'Invalid username'
+            return "Invalid username"
 
         if not self._verify_password(password, user[2]):
-            return 'Invalid password'
+            return "Invalid password"
 
         # Set session data
-        session['username'] = user[0]
-        session['name'] = user[1]
+        session["username"] = user[0]
+        session["name"] = user[1]
 
         return None
 
@@ -53,7 +53,7 @@ class AuthService:
         :param hashed_password: Stored password hash
         :return: True if password matches, False otherwise
         """
-        if hashed_password.startswith('$2b$'):
-            return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
+        if hashed_password.startswith("$2b$"):
+            return bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
         else:
             return password == hashed_password

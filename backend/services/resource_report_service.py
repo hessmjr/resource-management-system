@@ -17,9 +17,9 @@ class ResourceReportService:
 
         :return: rendered template
         """
-        username = session.get('username')
+        username = session.get("username")
 
         # query database for report information
         results = self.dal.get_resource_report(username)
 
-        return render_template('resource_report.html', results=results)
+        return render_template("resource_report.html", results=results)

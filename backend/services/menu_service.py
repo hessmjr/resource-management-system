@@ -9,7 +9,7 @@ class MenuService:
         self.dal = MenuDAL()
 
     def get_menu_page(self) -> str:
-        username = session.get('username')
+        username = session.get("username")
 
         if not username:
             return render_template("menu.html", details={})

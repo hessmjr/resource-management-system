@@ -22,41 +22,37 @@ class AddIncidentService:
         :return: rendered template or redirect
         """
         # get owner and create ID
-        username = session.get('username')
+        username = session.get("username")
         incident_id = int(uuid4().int / 10.0**29)
 
-        if request.method == 'GET':
+        if request.method == "GET":
             return self._show_add_incident_form(incident_id, error)
 
-        elif request.method == 'POST':
+        elif request.method == "POST":
             return self._process_add_incident_form(incident_id, username, error)
 
         return abort(405)
 
     def _show_add_incident_form(self, incident_id, error):
         """Show the add incident form."""
-        return render_template('add_incident.html',
-                             incident_id=incident_id,
-                             error=error)
+        return render_template("add_incident.html", incident_id=incident_id, error=error)
 
     def _process_add_incident_form(self, incident_id, username, error):
         """Process the submitted add incident form."""
-        if 'Save' in request.form:
+        if "Save" in request.form:
             error = self._create_incident(username)
 
             if not error:
-                flash('Incident successfully created.')
+                flash("Incident successfully created.")
 
-        if 'Cancel' in request.form or not error:
-            return redirect(url_for('menu.index'))
+        if "Cancel" in request.form or not error:
+            return redirect(url_for("menu.index"))
 
         # Get incident_id from form if it exists
-        if 'incident_id' in request.form:
-            incident_id = request.form['incident_id']
+        if "incident_id" in request.form:
+            incident_id = request.form["incident_id"]
 
-        return render_template('add_incident.html',
-                             incident_id=incident_id,
-                             error=error), 400
+        return render_template("add_incident.html", incident_id=incident_id, error=error), 400
 
     def _create_incident(self, username):
         """
@@ -85,7 +81,7 @@ class AddIncidentService:
 
     def _validate_required_fields(self):
         """Validate that all required fields are present."""
-        required_fields = ['incident_id', 'lat', 'long', 'date']
+        required_fields = ["incident_id", "lat", "long", "date"]
 
         for field in required_fields:
             if field not in request.form:
@@ -96,23 +92,24 @@ class AddIncidentService:
     def _extract_form_data(self):
         """Extract and return form data."""
         return {
-            'incident_id': request.form['incident_id'],
-            'description': request.form.get('description', ''),
-            'date': request.form['date'],
-            'lat': request.form['lat'],
-            'lng': request.form['long']
+            "incident_id": request.form["incident_id"],
+            "description": request.form.get("description", ""),
+            "date": request.form["date"],
+            "lat": request.form["lat"],
+            "lng": request.form["long"],
         }
 
     def _validate_form_data(self, form_data):
         """Validate all form data."""
         # Validate coordinates
-        if not validate_coordinates(form_data['lat'], form_data['lng']):
+        if not validate_coordinates(form_data["lat"], form_data["lng"]):
             return "Invalid latitude/longitude format"
 
         # Validate incident date
         try:
             from datetime import datetime
-            datetime.strptime(form_data['date'], '%Y-%m-%d')
+
+            datetime.strptime(form_data["date"], "%Y-%m-%d")
         except ValueError:
             return "Invalid incident date format. Please input YYYY-MM-DD"
 

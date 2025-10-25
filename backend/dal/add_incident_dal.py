@@ -25,13 +25,15 @@ class AddIncidentDAL:
                 '$longitude', '$incident_date')
         """)
 
-        sql = template.safe_substitute({
-            'incident_id': form_data['incident_id'],
-            'username': username,
-            'description': form_data['description'],
-            'latitude': form_data['lat'],
-            'longitude': form_data['lng'],
-            'incident_date': form_data['date']
-        })
+        sql = template.safe_substitute(
+            {
+                "incident_id": form_data["incident_id"],
+                "username": username,
+                "description": form_data["description"],
+                "latitude": form_data["lat"],
+                "longitude": form_data["lng"],
+                "incident_date": form_data["date"],
+            }
+        )
 
         commit_db(sql)

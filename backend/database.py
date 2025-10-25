@@ -24,7 +24,7 @@ def get_db() -> mysql.connector.MySQLConnection:
     current application context.
     :return: database connection
     """
-    if not hasattr(g, 'mysql_db'):
+    if not hasattr(g, "mysql_db"):
         g.mysql_db = connect_db()
     return g.mysql_db
 

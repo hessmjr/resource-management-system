@@ -46,5 +46,5 @@ class ResourceReportDAL:
             GROUP BY esf.esf_id
         """)
 
-        sql = template.substitute({'username': username})
+        sql = template.substitute({"username": username})
         return query_db(sql)

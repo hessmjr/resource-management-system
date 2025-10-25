@@ -38,7 +38,7 @@ class ResourceStatusDAL:
             WHERE incident.username = '$username' AND rr_status.status = 'Deployed'
         """)
 
-        sql = template.safe_substitute({'username': username})
+        sql = template.safe_substitute({"username": username})
         return query_db(sql)
 
     def get_resources_requested(self, username: str) -> list[tuple[Any, ...]]:
@@ -65,7 +65,7 @@ class ResourceStatusDAL:
             WHERE incident.username = '$username' AND rr_status.status = 'New'
         """)
 
-        sql = template.safe_substitute({'username': username})
+        sql = template.safe_substitute({"username": username})
         return query_db(sql)
 
     def get_resource_requests_received(self, username: str) -> list[tuple[Any, ...]]:
@@ -92,7 +92,7 @@ class ResourceStatusDAL:
             WHERE resource.username = '$username' AND rr_status.status IN ('New')
         """)
 
-        sql = template.safe_substitute({'username': username})
+        sql = template.safe_substitute({"username": username})
         return query_db(sql)
 
     def get_resources_in_repair(self, username: str) -> list[tuple[Any, ...]]:
@@ -113,7 +113,7 @@ class ResourceStatusDAL:
                 AND resource_repair.status != 'Cancelled'
         """)
 
-        sql = template.safe_substitute({'username': username})
+        sql = template.safe_substitute({"username": username})
         return query_db(sql)
 
     def update_resource_status(self, action: str, resource_request_id: str) -> None:
@@ -123,15 +123,15 @@ class ResourceStatusDAL:
         :param action: Action to perform (deploy, return, reject, etc.)
         :param resource_request_id: ID of the resource request to update
         """
-        if action == 'deploy':
+        if action == "deploy":
             self._deploy_resource(resource_request_id)
-        elif action == 'return':
+        elif action == "return":
             self._return_resource(resource_request_id)
-        elif action == 'reject':
+        elif action == "reject":
             self._reject_resource(resource_request_id)
-        elif action == 'cancel_request':
+        elif action == "cancel_request":
             self._cancel_request(resource_request_id)
-        elif action == 'cancel_repair':
+        elif action == "cancel_repair":
             self._cancel_repair(resource_request_id)
 
     def _deploy_resource(self, resource_request_id: str) -> None:
@@ -145,7 +145,7 @@ class ResourceStatusDAL:
             WHERE resource_request_id = $resource_request_id
         """)
 
-        sql = template.safe_substitute({'resource_request_id': resource_request_id})
+        sql = template.safe_substitute({"resource_request_id": resource_request_id})
         commit_db(sql)
 
     def _return_resource(self, resource_request_id: str) -> None:
@@ -159,7 +159,7 @@ class ResourceStatusDAL:
             WHERE resource_request_id = $resource_request_id
         """)
 
-        sql = template.safe_substitute({'resource_request_id': resource_request_id})
+        sql = template.safe_substitute({"resource_request_id": resource_request_id})
         commit_db(sql)
 
     def _reject_resource(self, resource_request_id: str) -> None:
@@ -173,7 +173,7 @@ class ResourceStatusDAL:
             WHERE resource_request_id = $resource_request_id
         """)
 
-        sql = template.safe_substitute({'resource_request_id': resource_request_id})
+        sql = template.safe_substitute({"resource_request_id": resource_request_id})
         commit_db(sql)
 
     def _cancel_request(self, resource_request_id: str) -> None:
@@ -187,7 +187,7 @@ class ResourceStatusDAL:
             WHERE resource_request_id = $resource_request_id
         """)
 
-        sql = template.safe_substitute({'resource_request_id': resource_request_id})
+        sql = template.safe_substitute({"resource_request_id": resource_request_id})
         commit_db(sql)
 
     def _cancel_repair(self, resource_repair_id: str) -> None:
@@ -198,5 +198,5 @@ class ResourceStatusDAL:
             WHERE resource_repair_id = $resource_repair_id
         """)
 
-        sql = template.safe_substitute({'resource_repair_id': resource_repair_id})
+        sql = template.safe_substitute({"resource_repair_id": resource_repair_id})
         commit_db(sql)

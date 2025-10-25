@@ -35,7 +35,7 @@ class SearchResourcesDAL:
             WHERE incident.username = '$username'
         """)
 
-        sql = template.safe_substitute({'username': username})
+        sql = template.safe_substitute({"username": username})
         return query_db(sql)
 
     def search_resources(self, search_params):
@@ -45,10 +45,10 @@ class SearchResourcesDAL:
         :param search_params: Dictionary containing search criteria
         :return: Tuple of (results, incident_info)
         """
-        esf_id = search_params['esf_id']
-        keyword = search_params['keyword']
-        distance = search_params['distance']
-        incident_id = search_params['incident_id']
+        esf_id = search_params["esf_id"]
+        keyword = search_params["keyword"]
+        distance = search_params["distance"]
+        incident_id = search_params["incident_id"]
 
         incident = None
 
@@ -92,12 +92,14 @@ class SearchResourcesDAL:
             VALUES (1, $resource_id, $incident_id, '$start_date', '$return_date')
         """)
 
-        sql = template.safe_substitute({
-            'resource_id': resource_id,
-            'incident_id': incident_id,
-            'start_date': start_date.strftime('%Y-%m-%d'),
-            'return_date': return_date.strftime('%Y-%m-%d')
-        })
+        sql = template.safe_substitute(
+            {
+                "resource_id": resource_id,
+                "incident_id": incident_id,
+                "start_date": start_date.strftime("%Y-%m-%d"),
+                "return_date": return_date.strftime("%Y-%m-%d"),
+            }
+        )
 
         commit_db(sql)
 
@@ -117,12 +119,14 @@ class SearchResourcesDAL:
             VALUES (2, $resource_id, $incident_id, '$start_date', '$return_date')
         """)
 
-        sql = template.safe_substitute({
-            'resource_id': resource_id,
-            'incident_id': incident_id,
-            'start_date': start_date.strftime('%Y-%m-%d'),
-            'return_date': return_date.strftime('%Y-%m-%d')
-        })
+        sql = template.safe_substitute(
+            {
+                "resource_id": resource_id,
+                "incident_id": incident_id,
+                "start_date": start_date.strftime("%Y-%m-%d"),
+                "return_date": return_date.strftime("%Y-%m-%d"),
+            }
+        )
 
         commit_db(sql)
 
@@ -141,11 +145,13 @@ class SearchResourcesDAL:
             VALUES ($resource_id, 'Scheduled', '$start_date', '$ready_date')
         """)
 
-        sql = template.safe_substitute({
-            'resource_id': resource_id,
-            'start_date': start_date.strftime('%Y-%m-%d'),
-            'return_date': return_date.strftime('%Y-%m-%d')
-        })
+        sql = template.safe_substitute(
+            {
+                "resource_id": resource_id,
+                "start_date": start_date.strftime("%Y-%m-%d"),
+                "return_date": return_date.strftime("%Y-%m-%d"),
+            }
+        )
 
         commit_db(sql)
 
@@ -164,7 +170,7 @@ class SearchResourcesDAL:
         distance = float(distance)
 
         # determine if zero
-        delta = .000001
+        delta = 0.000001
         if distance - delta < delta:
             return max_distance
 
@@ -232,7 +238,7 @@ class SearchResourcesDAL:
             ORDER BY requests.request_status, resource.name
         """)
 
-        return template.substitute({'keyword': keyword})
+        return template.substitute({"keyword": keyword})
 
     def _esf_sql(self, esf_id: str) -> str:
         """Build SQL query for ESF search only."""
@@ -266,7 +272,7 @@ class SearchResourcesDAL:
             ORDER BY requests.request_status, resource.name
         """)
 
-        return template.substitute({'esf_id': esf_id})
+        return template.substitute({"esf_id": esf_id})
 
     def _incident_sql(self, incident_id: str, distance: str) -> str:
         """Build SQL query for incident search only."""
@@ -307,7 +313,7 @@ class SearchResourcesDAL:
             ORDER BY distance ASC, requests.request_status, resource.name
         """)
 
-        return template.substitute({'incident_id': incident_id, 'distance': distance})
+        return template.substitute({"incident_id": incident_id, "distance": distance})
 
     def _keyword_esf_sql(self, keyword: str, esf_id: str) -> str:
         """Build SQL query for keyword and ESF search."""
@@ -345,7 +351,7 @@ class SearchResourcesDAL:
             ORDER BY requests.request_status, resource.name
         """)
 
-        return template.substitute({'keyword': keyword, 'esf_id': esf_id})
+        return template.substitute({"keyword": keyword, "esf_id": esf_id})
 
     def _keyword_incident_sql(self, keyword: str, incident_id: str, distance: str) -> str:
         """Build SQL query for keyword and incident search."""
@@ -393,11 +399,9 @@ class SearchResourcesDAL:
             ORDER BY distance ASC, requests.request_status, resource.name
         """)
 
-        return template.substitute({
-            'keyword': keyword,
-            'incident_id': incident_id,
-            'distance': distance
-        })
+        return template.substitute(
+            {"keyword": keyword, "incident_id": incident_id, "distance": distance}
+        )
 
     def _incident_esf_sql(self, esf_id: str, incident_id: str, distance: str) -> str:
         """Build SQL query for incident and ESF search."""
@@ -444,11 +448,9 @@ class SearchResourcesDAL:
             ORDER BY distance ASC, requests.request_status, resource.name
         """)
 
-        return template.substitute({
-            'incident_id': incident_id,
-            'distance': distance,
-            'esf_id': esf_id
-        })
+        return template.substitute(
+            {"incident_id": incident_id, "distance": distance, "esf_id": esf_id}
+        )
 
     def _all_sql(self, keyword: str, esf_id: str, incident_id: str, distance: str) -> str:
         """Build SQL query for all search criteria."""
@@ -500,12 +502,9 @@ class SearchResourcesDAL:
             ORDER BY distance ASC, requests.request_status, resource.name
         """)
 
-        return template.substitute({
-            'incident_id': incident_id,
-            'distance': distance,
-            'esf_id': esf_id,
-            'keyword': keyword
-        })
+        return template.substitute(
+            {"incident_id": incident_id, "distance": distance, "esf_id": esf_id, "keyword": keyword}
+        )
 
     def _get_incident_sql(self, incident_id: str) -> str:
         """Build SQL for getting a specific incident."""
@@ -516,4 +515,4 @@ class SearchResourcesDAL:
             LIMIT 1
         """)
 
-        return template.substitute({'incident_id': incident_id})
+        return template.substitute({"incident_id": incident_id})

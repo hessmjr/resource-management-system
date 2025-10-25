@@ -20,7 +20,7 @@ class ResourceStatusService:
         :param error: Any existing error message
         :return: rendered template
         """
-        username = session.get('username')
+        username = session.get("username")
         now = datetime.today().date()
 
         # query to get the statuses of user resources
@@ -30,13 +30,15 @@ class ResourceStatusService:
         repairs = self.dal.get_resources_in_repair(username)
 
         # return rendered template to user with any errors
-        return render_template('resource_status.html',
-                             resources_in_use=in_use,
-                             resources_requested=requested,
-                             resource_requests_received=requests_received,
-                             resource_repairs=repairs,
-                             now=now,
-                             error=error)
+        return render_template(
+            "resource_status.html",
+            resources_in_use=in_use,
+            resources_requested=requested,
+            resource_requests_received=requests_received,
+            resource_repairs=repairs,
+            now=now,
+            error=error,
+        )
 
     def update_resource_status(self):
         """
@@ -45,7 +47,7 @@ class ResourceStatusService:
         :return: redirect to resource status page
         """
         # get requested resource ID
-        req_id = request.args.get('id', '')
+        req_id = request.args.get("id", "")
 
         # determine which action to take based on URL
         action = self._determine_action_from_url()
@@ -54,10 +56,10 @@ class ResourceStatusService:
             abort(405)
 
         # if ID isn't blank create query and update database
-        if req_id != '':
+        if req_id != "":
             self.dal.update_resource_status(action, req_id)
 
-        return redirect(url_for('resource_status.resource_status'))
+        return redirect(url_for("resource_status.resource_status"))
 
     def _determine_action_from_url(self):
         """
@@ -67,15 +69,15 @@ class ResourceStatusService:
         """
         url = request.url
 
-        if '/deploy' in url:
-            return 'deploy'
-        elif '/return' in url:
-            return 'return'
-        elif '/reject' in url:
-            return 'reject'
-        elif '/request/cancel' in url:
-            return 'cancel_request'
-        elif '/repair/cancel' in url:
-            return 'cancel_repair'
+        if "/deploy" in url:
+            return "deploy"
+        elif "/return" in url:
+            return "return"
+        elif "/reject" in url:
+            return "reject"
+        elif "/request/cancel" in url:
+            return "cancel_request"
+        elif "/repair/cancel" in url:
+            return "cancel_repair"
 
         return None
