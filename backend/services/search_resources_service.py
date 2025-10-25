@@ -43,7 +43,7 @@ class SearchResourcesService:
         """Process the search request."""
         # if user cancels then return to menu
         if 'cancel' in request.form:
-            return redirect(url_for('menu.menu'))
+            return redirect(url_for('menu.index'))
 
         # extract search parameters
         search_params = self._extract_search_parameters()

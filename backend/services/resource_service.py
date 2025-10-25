@@ -47,7 +47,7 @@ class ResourceService:
                 flash('Resource successfully created.')
 
         if 'cancel' in request.form or not error:
-            return redirect(url_for('menu.menu'))
+            return redirect(url_for('menu.index'))
 
         if 'resource_id' in request.form:
             resource_id = request.form['resource_id']

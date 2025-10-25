@@ -48,7 +48,7 @@ class AddIncidentService:
                 flash('Incident successfully created.')
 
         if 'Cancel' in request.form or not error:
-            return redirect(url_for('menu.menu'))
+            return redirect(url_for('menu.index'))
 
         # Get incident_id from form if it exists
         if 'incident_id' in request.form:

@@ -4,8 +4,8 @@ from services.search_resources_service import SearchResourcesService
 search_resources_bp = Blueprint('search_resources', __name__)
 
 
-@search_resources_bp.route('/search-resources', methods=['GET', 'POST'])
-def search_resources():
+@search_resources_bp.route('/', methods=['GET', 'POST'])
+def index():
     service = SearchResourcesService()
     return service.handle_search_resources_request()
 

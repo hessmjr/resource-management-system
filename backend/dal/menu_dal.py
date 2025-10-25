@@ -22,6 +22,7 @@ class MenuDAL:
         cursor = self.db.cursor()
         cursor.execute(self._get_user_details_query(), (username,))
         result = cursor.fetchall()
+        cursor.fetchall()  # Consume any remaining results
         cursor.close()
         return result
 
@@ -34,6 +35,7 @@ class MenuDAL:
         cursor = self.db.cursor()
         cursor.execute(self._get_user_details_query(), ('dummy',))
         column_names = [desc[0] for desc in cursor.description]
+        cursor.fetchall()  # Consume any remaining results
         cursor.close()
         return column_names
 

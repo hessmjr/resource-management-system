@@ -4,8 +4,8 @@ from services.resource_status_service import ResourceStatusService
 resource_status_bp = Blueprint('resource_status', __name__)
 
 
-@resource_status_bp.route('/resource-status', methods=['GET'])
-def resource_status(error=None):
+@resource_status_bp.route('/')
+def index(error=None):
     service = ResourceStatusService()
     return service.get_resource_status_page(error)
 
