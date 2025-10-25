@@ -2,14 +2,16 @@ from re import compile, match
 
 
 def validate_coordinates(lat: str, lng: str) -> bool:
-    lat_regex = compile(r"^-?([1-8]?[1-9]|[1-9]0)\.\d{1,6}$")
-    long_regex = compile(r"^-?(1[1-8][1-9]|[0-9]{1,2})\.\d{1,6}$")
-    return match(long_regex, lng) and match(lat_regex, lat)
+    # Latitude: -90 to 90, longitude: -180 to 180, must have decimal places
+    lat_regex = compile(r"^-?(90(\.0+)?|[1-8]?[0-9]\.\d{1,6})$")
+    long_regex = compile(r"^-?(180(\.0+)?|1[0-7][0-9]\.\d{1,6}|[0-9]?[0-9]\.\d{1,6})$")
+    return bool(match(long_regex, lng) and match(lat_regex, lat))
 
 
 def validate_cost_format(cost: str) -> bool:
-    cost_regex = compile(r"[\d]+(\.[\d]{2})?")
-    return match(cost_regex, cost)
+    # Must have exactly 2 decimal places or be a whole number
+    cost_regex = compile(r"^\d+(\.\d{2})?$")
+    return bool(match(cost_regex, cost))
 
 
 def validate_cost_amount(cost: str) -> bool:
@@ -20,8 +22,9 @@ def validate_cost_amount(cost: str) -> bool:
 
 
 def validate_model_format(model: str) -> bool:
-    model_regex = compile(r"[\w -.]+")
-    return match(model_regex, model)
+    # Allow letters, numbers, spaces, hyphens, and periods only
+    model_regex = compile(r"^[a-zA-Z0-9\s\-\.]+$")
+    return bool(match(model_regex, model))
 
 
 def validate_esf_id(esf_id: str, valid_esfs: list) -> bool:
@@ -51,5 +54,6 @@ def validate_cost_id(cost_id: str, valid_costs: list) -> bool:
 
 
 def validate_capability_format(capability: str) -> bool:
-    model_regex = compile(r"[\w -.]+")
-    return match(model_regex, capability)
+    # Allow letters, numbers, spaces, hyphens, and periods only
+    capability_regex = compile(r"^[a-zA-Z0-9\s\-\.]+$")
+    return bool(match(capability_regex, capability))

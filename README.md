@@ -32,16 +32,37 @@ docker exec -it rms-mysql mysql -u root -p
 
 ## Development
 
-Tools and commands for maintaining code quality and running tests.
+Tools and commands for maintaining code quality and running tests.  Tools can be excuted a couple different ways
+
+```bash
+# Method 1: Traditional approach (after running uv sync)
+source .venv/bin/activate  # Activate environment
+pytest tests/unit/ -v      # Run tests
+deactivate                # Deactivate when done
+
+# Method 2: Using uv run
+uv run pytest tests/unit/ -v
+```
 
 ### Code Quality
 ```bash
 # Lint and format
 ruff check .
 ruff format .
+```
 
-# Run tests
+### Testing
+Example commands for running the test suite.
+
+```bash
+# Run tests (Docker services must be running)
 pytest
+
+# Run all unit tests
+pytest tests/unit/ -v
+
+# Run specific integration workflow
+pytest tests/integration/test_resource_lifecycle.py -v
 ```
 
 ## Test Users
