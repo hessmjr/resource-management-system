@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Any
+from typing import Any
 
 
 class Config:
@@ -18,7 +18,7 @@ class Config:
     DEBUG = os.environ.get('FLASK_DEBUG', '0') == '1'
 
     @classmethod
-    def get_database_config(cls) -> Dict[str, Any]:
+    def get_database_config(cls) -> dict[str, Any]:
         """Get database configuration dictionary."""
         return {
             'host': cls.DB_HOST,

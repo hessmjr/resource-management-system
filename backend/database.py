@@ -1,8 +1,8 @@
-from typing import Any, List, Optional, Tuple
-import mysql.connector
-from flask import g, current_app
+from typing import Any
 
+import mysql.connector
 from config import Config
+from flask import current_app, g
 
 
 def connect_db() -> mysql.connector.MySQLConnection:
@@ -29,7 +29,7 @@ def get_db() -> mysql.connector.MySQLConnection:
     return g.mysql_db
 
 
-def query_db(query: str, params: Optional[Tuple] = None) -> Optional[List[Tuple[Any, ...]]]:
+def query_db(query: str, params: tuple | None = None) -> list[tuple[Any, ...]] | None:
     """
     Queries the database with given SQL string and parameters.
     :param query: SQL query string
@@ -53,7 +53,7 @@ def query_db(query: str, params: Optional[Tuple] = None) -> Optional[List[Tuple[
         raise
 
 
-def commit_db(query: str, params: Optional[Tuple] = None) -> None:
+def commit_db(query: str, params: tuple | None = None) -> None:
     """
     Commits the new, unsaved changes to the database.
     :param query: SQL query string
