@@ -41,7 +41,8 @@ class AuthService:
 
     def logout_user(self) -> None:
         """Clear user session."""
-        session.clear()
+        session.pop("username", None)
+        session.pop("name", None)
 
     def _verify_password(self, password: str, hashed_password: str) -> bool:
         """

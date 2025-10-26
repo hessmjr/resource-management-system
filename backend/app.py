@@ -9,7 +9,7 @@ from blueprints.resource_status.routes import resource_status_bp
 from blueprints.search_resources.routes import search_resources_bp
 from config import config
 from dotenv import load_dotenv
-from flask import Flask, redirect, request, session, url_for
+from flask import Flask, Response, redirect, request, session, url_for
 
 load_dotenv()
 
@@ -29,25 +29,24 @@ def create_app(config_name: str = "default") -> Flask:
     app.register_blueprint(resource_status_bp, url_prefix="/resource-status")
     app.register_blueprint(search_resources_bp, url_prefix="/search-resources")
 
-    @app.before_request
-    def before_request():
-        if request.endpoint and (
-            request.endpoint.startswith("auth.")
-            or request.endpoint == "static"
-            or (request.url and "static" in request.url)
-        ):
-            return None
-
-        if "username" not in session and "name" not in session:
-            return redirect(url_for("auth.login"))
-
-        return None
-
     return app
+
+
+def check_user_session() -> Response | None:
+    """Redirect to login if user is not authenticated."""
+    if (
+        session.get("username") is None
+        and request.endpoint
+        and not request.endpoint.startswith("auth")
+        and request.endpoint != "static"
+    ):
+        return redirect(url_for("auth.login"))
+    return None
 
 
 config_name = os.environ.get("FLASK_ENV", "development")
 app = create_app(config_name)
+app.before_request(check_user_session)
 
 
 if __name__ == "__main__":
