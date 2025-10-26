@@ -37,7 +37,7 @@ services:
       - .env
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./src/sql:/docker-entrypoint-initdb.d:ro
+      - ./backend/sql:/docker-entrypoint-initdb.d:ro
     networks:
       - devnet
     restart: unless-stopped

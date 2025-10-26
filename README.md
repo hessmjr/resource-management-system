@@ -3,55 +3,73 @@ Georgia Tech OMSCS Database Concepts project.  Web application for managing
 emergency resources built with Python, Flask, and MySQL.  Design requirements
 for the project are in the specifications.pdf file.
 
+## Quick Start
+
+Get the application running locally with Docker and modern Python tooling.
+
+### Prerequisites
+- Docker & Docker Compose
+- uv (Python package manager)
+
+### Development Setup
+```bash
+# Install dependencies
+uv sync
+
+# Start services
+docker compose up -d
+
+# Access application
+open http://localhost:5000
+```
+
+### Database Access
+```bash
+# Connect to MySQL
+docker exec -it rms-mysql mysql -u root -p
+# Password: password
+```
+
 ## Development
-Instructions and dependencies needed for development
 
-### Dependencies:
-You'll need the following tools to run the application:
+Tools and commands for maintaining code quality and running tests.  Tools can be excuted a couple different ways
 
-- [Docker]()
-- [Docker Compose]()
+```bash
+# Method 1: Traditional approach (after running uv sync)
+source .venv/bin/activate  # Activate environment
+pytest tests/unit/ -v      # Run tests
+deactivate                # Deactivate when done
 
-To use Docker, ensure that you have [Docker](https://www.docker.com/) and
-[Docker Compose](https://docs.docker.com/compose/) installed properly. Then,
-from the project directory, issue the following commands:
+# Method 2: Using uv run
+uv run pytest tests/unit/ -v
+```
 
-1. `docker/up.sh`  - this starts all the necessary components
-2. `docker/bash.sh` - this logs into the web app and lets you run bash commands
+### Code Quality
+```bash
+# Lint and format
+ruff check .
+ruff format .
+```
 
-After executing those commands you will be logged into the virtual machine and
-in the project directory on the VM.  When finished you may exit the VM and
-then execute to clean up:
+### Testing
+Example commands for running the test suite.
 
-1. `docker/down.sh`
+```bash
+# Run tests (Docker services must be running)
+pytest
 
-### Start-Up
-The service runs when Docker is initially started using `docker/up.sh`.  If you
-need to access the process then the following can help:
+# Run all unit tests
+pytest tests/unit/ -v
 
-1. Once everything is complete execute the command `docker/bash.sh` to log into
-   the Virtual Machine
-2. Navigate to the project by executing `cd code`
-3. To re-start the flask server from the same directory execute
-   `python src/main.py`
-    - You can now reach the app from your computer's browser, just go to
-    `http://localhost:5000/`
+# Run specific integration workflow
+pytest tests/integration/test_resource_lifecycle.py -v
+```
 
-**Database**
-MySQL also should be currently running now and is reachable from logging into
-its Docker container as well, login with the following:
-    - user: root
-    - password: password
-    - Ex: `mysql -h 127.0.0.1 -u root --password='password'` should open the
-    MySQL prompt
+## Test Users
 
+Pre-configured user accounts for testing the application functionality.
 
-## Usage
-The application should be reachable from your browser at `http://localhost:5000/`
-once the Vagrant box is running.  There are 4 users built into the application
-for testing and all use the password `password`:
-
-- user1
-- user2
-- user3
-- user4
+- **user1** / password
+- **user2** / password
+- **user3** / password
+- **user4** / password

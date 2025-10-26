@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+  <meta content="utf-8" http-equiv="encoding" />
+
+  <title>{% block title %} ERMS {% endblock %}</title>
+
+  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/materialize.min.css') }}"
+    media="screen,projection" />
+  <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}"
+    media="screen,projection" />
+
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-latest.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/materialize.min.js') }}"></script>
+
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+
+</head>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="row">
+  <div class="col s12 center">
+    <ul class="red-text">
+      {% for message in messages %}
+      <li><strong>{{ message }}</strong></li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endif %}
+{% endwith %}
+
+{% block body %}{% endblock %}
+
+</html>
