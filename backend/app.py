@@ -29,24 +29,23 @@ def create_app(config_name: str = "default") -> Flask:
     app.register_blueprint(resource_status_bp, url_prefix="/resource-status")
     app.register_blueprint(search_resources_bp, url_prefix="/search-resources")
 
+    @app.before_request
+    def check_user_session() -> Response | None:
+        """Redirect to login if user is not authenticated."""
+        if (
+            session.get("username") is None
+            and request.endpoint
+            and not request.endpoint.startswith("auth")
+            and request.endpoint != "static"
+        ):
+            return redirect(url_for("auth.login"))
+        return None
+
     return app
-
-
-def check_user_session() -> Response | None:
-    """Redirect to login if user is not authenticated."""
-    if (
-        session.get("username") is None
-        and request.endpoint
-        and not request.endpoint.startswith("auth")
-        and request.endpoint != "static"
-    ):
-        return redirect(url_for("auth.login"))
-    return None
 
 
 config_name = os.environ.get("FLASK_ENV", "development")
 app = create_app(config_name)
-app.before_request(check_user_session)
 
 
 if __name__ == "__main__":
