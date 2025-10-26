@@ -18,14 +18,11 @@ class TestResourceLifecycle:
 
     def test_add_resource_workflow(self, client, clean_db):
         """Test adding a new resource."""
-        # Setup test data
         user = create_test_user("resourceowner", "Resource Owner", "password")
         insert_user_to_db(user)
 
-        # Login
         client.post("/login", data={"username": "resourceowner", "password": "password"})
 
-        # Add resource
         response = client.post(
             "/add-resource/",
             data={
@@ -44,7 +41,7 @@ class TestResourceLifecycle:
 
     def test_search_resources_by_esf(self, client, clean_db):
         """Test searching resources by ESF."""
-        # Setup test data - ESF and cost_period are pre-seeded
+        # ESF and cost_period are pre-seeded
         user = create_test_user("searcher", "Resource Searcher", "password")
         resource = create_test_resource(
             "1234567890",
@@ -61,10 +58,8 @@ class TestResourceLifecycle:
         insert_user_to_db(user)
         insert_resource_to_db(resource)
 
-        # Login
         client.post("/login", data={"username": "searcher", "password": "password"})
 
-        # Search by ESF
         response = client.post("/search-resources/", data={"esf": "1"})
 
         assert response.status_code == 200
@@ -72,7 +67,6 @@ class TestResourceLifecycle:
 
     def test_search_resources_by_keyword(self, client, clean_db):
         """Test searching resources by keyword."""
-        # Setup test data
         user = create_test_user("searcher", "Resource Searcher", "password")
         resource = create_test_resource(
             "1234567890",
@@ -89,10 +83,8 @@ class TestResourceLifecycle:
         insert_user_to_db(user)
         insert_resource_to_db(resource)
 
-        # Login
         client.post("/login", data={"username": "searcher", "password": "password"})
 
-        # Search by keyword
         response = client.post("/search-resources/", data={"keyword": "Ambulance"})
 
         assert response.status_code == 200
@@ -100,7 +92,7 @@ class TestResourceLifecycle:
 
     def test_search_resources_by_distance(self, client, clean_db):
         """Test searching resources by distance."""
-        # Setup test data - ESF and cost_period are pre-seeded
+        # ESF and cost_period are pre-seeded
         user = create_test_user("searcher", "Resource Searcher", "password")
         resource = create_test_resource(
             "1234567890",
@@ -117,17 +109,14 @@ class TestResourceLifecycle:
         insert_user_to_db(user)
         insert_resource_to_db(resource)
 
-        # Login
         client.post("/login", data={"username": "searcher", "password": "password"})
 
-        # Search by distance
         response = client.post("/search-resources/", data={"distance": "50"})
 
         assert response.status_code == 200
 
     def test_resource_deployment_workflow(self, client, clean_db):
         """Test deploying a resource to an incident."""
-        # Setup test data
         user = create_test_user("coordinator", "Emergency Coordinator", "password")
         resource = create_test_resource(
             "1234567890",
@@ -148,10 +137,8 @@ class TestResourceLifecycle:
         insert_resource_to_db(resource)
         insert_incident_to_db(incident)
 
-        # Login
         client.post("/login", data={"username": "coordinator", "password": "password"})
 
-        # Deploy resource
         response = client.get("/search-resources/deploy/?resource-id=1234567890&incident-id=1")
 
         assert response.status_code == 302
@@ -190,8 +177,6 @@ class TestResourceLifecycle:
         assert "/resource-status" in response.location
 
     def test_resource_repair_workflow(self, client, clean_db):
-        """Test requesting resource repair."""
-        # Setup test data
         user = create_test_user("owner", "Resource Owner", "password")
         resource = create_test_resource(
             "1234567890", "owner", "Test Ambulance", "Ford", "33.7490", "-84.3880", 1, "100.00", 1
@@ -200,10 +185,8 @@ class TestResourceLifecycle:
         insert_user_to_db(user)
         insert_resource_to_db(resource)
 
-        # Login
         client.post("/login", data={"username": "owner", "password": "password"})
 
-        # Request repair
         response = client.get("/search-resources/repair/?resource-id=1234567890")
 
         assert response.status_code == 302
@@ -211,7 +194,6 @@ class TestResourceLifecycle:
 
     def test_complete_resource_lifecycle(self, client, clean_db):
         """Test complete workflow: Add → Search → Deploy → Check Status."""
-        # Setup test data
         user = create_test_user("coordinator", "Emergency Coordinator", "password")
         incident = create_test_incident(
             1, "coordinator", "Emergency Response", "Emergency", "33.7500", "-84.3890"
@@ -220,7 +202,6 @@ class TestResourceLifecycle:
         insert_user_to_db(user)
         insert_incident_to_db(incident)
 
-        # Login
         client.post("/login", data={"username": "coordinator", "password": "password"})
 
         # Step 1: Add resource

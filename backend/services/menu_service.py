@@ -14,12 +14,11 @@ class MenuService:
         if not username:
             return render_template("menu.html", details={})
 
-        user_details = self.dal.get_user_details(username)
+        user_details, column_names = self.dal.get_user_details(username)
 
         details: dict[str, Any] = {}
         if user_details and len(user_details) > 0:
             user_row = user_details[0]
-            column_names = self.dal.get_user_details_columns()
 
             for value, column_name in zip(user_row, column_names, strict=True):
                 if value is not None:

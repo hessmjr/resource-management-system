@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-# Add backend directory to Python path
 backend_path = Path(__file__).parent.parent.parent / "backend"
 sys.path.insert(0, str(backend_path))
 
@@ -26,7 +25,6 @@ def app():
     """Create Flask app with isolated test database."""
     app = create_app("testing")
     app.config["TESTING"] = True
-    # Use separate test database
     app.config["DB_NAME"] = "rms_test_db"
     return app
 
@@ -42,7 +40,6 @@ def setup_test_db():
     import subprocess
     import time
 
-    # Simple approach: just create the test database and let tests create their own data
     try:
         # Drop and recreate test database
         subprocess.run([
@@ -66,19 +63,14 @@ def setup_test_db():
         ], input=schema_dump.stdout, check=True, timeout=30)
 
         # Copy reference data (ESF, cost_time_period, and resource_request_status)
-        print("Copying reference data...")
         reference_data_dump = subprocess.run([
             "docker", "exec", "rms-mysql", "mysqldump", "-u", "root", "-ppassword",
             "--no-create-info", "--where=1", "rms_db", "esf", "cost_time_period", "resource_request_status"
         ], stdout=subprocess.PIPE, check=True, timeout=30)
 
-        print(f"Reference data dump size: {len(reference_data_dump.stdout)} bytes")
-
-        result = subprocess.run([
+        subprocess.run([
             "docker", "exec", "-i", "rms-mysql", "mysql", "-u", "root", "-ppassword", "rms_test_db"
         ], input=reference_data_dump.stdout, check=True, timeout=30)
-
-        print("Reference data copied successfully")
 
         # Disable strict SQL mode for test database
         subprocess.run([
@@ -86,29 +78,17 @@ def setup_test_db():
             "-e", "SET GLOBAL sql_mode = '';"
         ], check=True, timeout=10)
 
-        print("Test database setup completed successfully")
-
-    except subprocess.TimeoutExpired:
-        print("Database setup timed out - using simplified approach")
+    except (subprocess.TimeoutExpired, Exception) as e:
+        print(f"Database setup failed: {e}")
+        print("Attempting minimal fallback...")
         # Fallback: just ensure test database exists
         try:
             subprocess.run([
                 "docker", "exec", "rms-mysql", "mysql", "-u", "root", "-ppassword",
                 "-e", "CREATE DATABASE IF NOT EXISTS rms_test_db;"
             ], check=True, timeout=10)
-            print("Fallback database creation completed")
-        except subprocess.TimeoutExpired:
-            print("Even fallback database creation timed out - tests may fail")
-    except Exception as e:
-        print(f"Database setup failed: {e}")
-        # Try minimal fallback
-        try:
-            subprocess.run([
-                "docker", "exec", "rms-mysql", "mysql", "-u", "root", "-ppassword",
-                "-e", "CREATE DATABASE IF NOT EXISTS rms_test_db;"
-            ], check=True, timeout=10)
-        except:
-            print("All database setup attempts failed")
+        except Exception as fallback_error:
+            print(f"Minimal database creation failed: {fallback_error}")
 
     yield
 
@@ -118,7 +98,6 @@ def setup_test_db():
             "docker", "exec", "rms-mysql", "mysql", "-u", "root", "-ppassword",
             "-e", "DROP DATABASE IF EXISTS rms_test_db;"
         ], check=True, timeout=10)
-        print("Test database cleanup completed")
     except subprocess.TimeoutExpired:
         print("Database cleanup timed out")
     except Exception as e:
@@ -133,8 +112,8 @@ def clean_db(app, setup_test_db):
             # Clean user-generated data in dependency order (children first)
             # Keep reference data: esf, cost_time_period, resource_request_status
             cleanup_queries = [
-                "DELETE FROM resource_request",  # Delete child records first
-                "DELETE FROM resource_repair",   # Delete repair records before resources
+                "DELETE FROM resource_request",
+                "DELETE FROM resource_repair",
                 "DELETE FROM resource_esf",
                 "DELETE FROM capability",
                 "DELETE FROM resource",

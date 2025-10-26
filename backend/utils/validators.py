@@ -1,17 +1,21 @@
 from re import compile, match
+from typing import Any
+
+# Pre-compile regex patterns for performance
+LAT_REGEX = compile(r"^-?(90(\.0+)?|[1-8]?[0-9]\.\d{1,6})$")
+LNG_REGEX = compile(r"^-?(180(\.0+)?|1[0-7][0-9]\.\d{1,6}|[0-9]?[0-9]\.\d{1,6})$")
+COST_REGEX = compile(r"^\d+(\.\d{2})?$")
+ALPHANUMERIC_REGEX = compile(r"^[a-zA-Z0-9\s\-\.]+$")
 
 
 def validate_coordinates(lat: str, lng: str) -> bool:
     # Latitude: -90 to 90, longitude: -180 to 180, must have decimal places
-    lat_regex = compile(r"^-?(90(\.0+)?|[1-8]?[0-9]\.\d{1,6})$")
-    long_regex = compile(r"^-?(180(\.0+)?|1[0-7][0-9]\.\d{1,6}|[0-9]?[0-9]\.\d{1,6})$")
-    return bool(match(long_regex, lng) and match(lat_regex, lat))
+    return bool(match(LNG_REGEX, lng) and match(LAT_REGEX, lat))
 
 
 def validate_cost_format(cost: str) -> bool:
     # Must have exactly 2 decimal places or be a whole number
-    cost_regex = compile(r"^\d+(\.\d{2})?$")
-    return bool(match(cost_regex, cost))
+    return bool(match(COST_REGEX, cost))
 
 
 def validate_cost_amount(cost: str) -> bool:
@@ -21,39 +25,16 @@ def validate_cost_amount(cost: str) -> bool:
         return False
 
 
-def validate_model_format(model: str) -> bool:
+def validate_alphanumeric_format(value: str) -> bool:
     # Allow letters, numbers, spaces, hyphens, and periods only
-    model_regex = compile(r"^[a-zA-Z0-9\s\-\.]+$")
-    return bool(match(model_regex, model))
+    return bool(match(ALPHANUMERIC_REGEX, value))
 
 
-def validate_esf_id(esf_id: str, valid_esfs: list) -> bool:
-    if not esf_id.isdigit():
+def validate_id_in_list(id_str: str, valid_items: list[tuple[Any, ...]]) -> bool:
+    if not id_str.isdigit():
         return False
 
-    esf_id = int(esf_id)
+    item_id = int(id_str)
+    valid_ids = {item[0] for item in valid_items}
 
-    for esf in valid_esfs:
-        if esf_id in esf:
-            return True
-
-    return False
-
-
-def validate_cost_id(cost_id: str, valid_costs: list) -> bool:
-    if not cost_id.isdigit():
-        return False
-
-    cost_id = int(cost_id)
-
-    for cost in valid_costs:
-        if cost_id in cost:
-            return True
-
-    return False
-
-
-def validate_capability_format(capability: str) -> bool:
-    # Allow letters, numbers, spaces, hyphens, and periods only
-    capability_regex = compile(r"^[a-zA-Z0-9\s\-\.]+$")
-    return bool(match(capability_regex, capability))
+    return item_id in valid_ids

@@ -12,32 +12,20 @@ class MenuDAL:
     def __init__(self):
         self.db = get_db()
 
-    def get_user_details(self, username: str) -> list[tuple[Any, ...]]:
+    def get_user_details(self, username: str) -> tuple[list[tuple[Any, ...]], list[str]]:
         """
         Get user details from database.
 
         :param username: Username to get details for
-        :return: List of user detail tuples from database
+        :return: A tuple containing list of user detail tuples from database and a list of column names
         """
         cursor = self.db.cursor()
         cursor.execute(self._get_user_details_query(), (username,))
         result = cursor.fetchall()
-        cursor.fetchall()  # Consume any remaining results
+        column_names = [desc[0] for desc in cursor.description] if cursor.description else []
+        cursor.fetchall()
         cursor.close()
-        return result
-
-    def get_user_details_columns(self) -> list[str]:
-        """
-        Get column names for user details query.
-
-        :return: List of column names
-        """
-        cursor = self.db.cursor()
-        cursor.execute(self._get_user_details_query(), ("dummy",))
-        column_names = [desc[0] for desc in cursor.description]
-        cursor.fetchall()  # Consume any remaining results
-        cursor.close()
-        return column_names
+        return result, column_names
 
     def _get_user_details_query(self) -> str:
         """

@@ -3,13 +3,11 @@ from uuid import uuid4
 from dal.resource_dal import ResourceDAL
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from utils.validators import (
-    validate_capability_format,
+    validate_alphanumeric_format,
     validate_coordinates,
     validate_cost_amount,
     validate_cost_format,
-    validate_cost_id,
-    validate_esf_id,
-    validate_model_format,
+    validate_id_in_list,
 )
 
 
@@ -111,13 +109,13 @@ class ResourceService:
         }
 
     def _validate_form_data(self, form_data, esfs, costs):
-        if not validate_esf_id(form_data["esf_id"], esfs):
+        if not validate_id_in_list(form_data["esf_id"], esfs):
             return "Invalid Primary ESF"
 
         if form_data["esf_id"] in form_data["secondary_esfs"]:
             return "Duplicate primary and secondary ESF"
 
-        if not validate_cost_id(form_data["cost_id"], costs):
+        if not validate_id_in_list(form_data["cost_id"], costs):
             return "Invalid cost type"
 
         if not validate_coordinates(form_data["lat"], form_data["lng"]):
@@ -129,7 +127,7 @@ class ResourceService:
         if not validate_cost_amount(form_data["cost"]):
             return "Cost amount negative"
 
-        if not validate_model_format(form_data["model"]):
+        if not validate_alphanumeric_format(form_data["model"]):
             return "Model is not a valid format"
 
         return None
@@ -152,9 +150,9 @@ class ResourceService:
         )
 
         for capability in form_data["capabilities"]:
-            if validate_capability_format(capability):
+            if validate_alphanumeric_format(capability):
                 self.dal.add_resource_capability(resource_id, capability)
 
         for secondary_esf in form_data["secondary_esfs"]:
-            if validate_esf_id(secondary_esf, self.dal.get_all_esfs()):
+            if validate_id_in_list(secondary_esf, self.dal.get_all_esfs()):
                 self.dal.add_secondary_esf(resource_id, int(secondary_esf))
