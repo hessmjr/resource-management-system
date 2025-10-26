@@ -3,9 +3,7 @@ from typing import Any
 
 
 class Config:
-    """Base configuration class."""
-
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "dev-secret-key-change-in-production"
+    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
 
     # Database configuration
     DB_HOST = os.environ.get("DB_HOST", "localhost")
@@ -15,49 +13,25 @@ class Config:
     DB_PASSWORD = os.environ.get("DB_PASSWORD", "password")
 
     # Flask configuration
-    DEBUG = os.environ.get("FLASK_DEBUG", "0") == "1"
-
-    @classmethod
-    def get_database_config(cls) -> dict[str, Any]:
-        """Get database configuration dictionary."""
-        return {
-            "host": cls.DB_HOST,
-            "port": cls.DB_PORT,
-            "user": cls.DB_USER,
-            "password": cls.DB_PASSWORD,
-            "database": cls.DB_NAME,
-            "autocommit": False,
-        }
+    DEBUG = os.environ.get("FLASK_DEBUG", "false").lower() in ("true", "1", "t")
+    TESTING = False
 
 
 class DevelopmentConfig(Config):
-    """Development configuration."""
-
     DEBUG = True
-
-
-class ProductionConfig(Config):
-    """Production configuration."""
-
-    DEBUG = False
 
 
 class TestingConfig(Config):
-    """Testing configuration."""
-
-    DEBUG = True
     TESTING = True
+    DEBUG = True
 
-    # Override database config for testing with Docker
     DB_HOST = "localhost"
-    DB_PORT = 23306  # Docker mapped port
+    DB_PORT = 23306
     DB_NAME = "rms_test_db"
 
 
-# Configuration mapping
 config = {
     "development": DevelopmentConfig,
-    "production": ProductionConfig,
     "testing": TestingConfig,
     "default": DevelopmentConfig,
 }
