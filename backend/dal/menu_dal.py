@@ -23,7 +23,6 @@ class MenuDAL:
         cursor.execute(self._get_user_details_query(), (username,))
         result = cursor.fetchall()
         column_names = [desc[0] for desc in cursor.description] if cursor.description else []
-        cursor.fetchall()
         cursor.close()
         return result, column_names
 

@@ -22,6 +22,5 @@ class UserDAL:
         cursor = self.db.cursor()
         cursor.execute("SELECT * FROM user WHERE username = %s", (username,))
         result = cursor.fetchone()
-        cursor.fetchall()  # Consume any remaining results
         cursor.close()
         return result

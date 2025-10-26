@@ -54,7 +54,6 @@ def query_db(query: str, params: tuple | None = None) -> list[tuple[Any, ...]] |
         cursor = db.cursor()
         cursor.execute(query, params)
         result = cursor.fetchall()
-        cursor.fetchall()  # Consume any remaining results
         cursor.close()
         return result
     except Exception as e:

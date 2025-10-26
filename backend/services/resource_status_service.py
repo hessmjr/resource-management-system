@@ -59,7 +59,8 @@ class ResourceStatusService:
         if req_id != "":
             self.dal.update_resource_status(action, req_id)
 
-        return redirect(url_for("resource_status.resource_status"))
+        session["previous_url"] = url_for("resource_status.index")
+        return redirect(url_for("resource_status.index"))
 
     def _determine_action_from_url(self):
         """
