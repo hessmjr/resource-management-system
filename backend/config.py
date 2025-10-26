@@ -42,9 +42,22 @@ class ProductionConfig(Config):
     DEBUG = False
 
 
+class TestingConfig(Config):
+    """Testing configuration."""
+
+    DEBUG = True
+    TESTING = True
+
+    # Override database config for testing with Docker
+    DB_HOST = "localhost"
+    DB_PORT = 23306  # Docker mapped port
+    DB_NAME = "rms_test_db"
+
+
 # Configuration mapping
 config = {
     "development": DevelopmentConfig,
     "production": ProductionConfig,
+    "testing": TestingConfig,
     "default": DevelopmentConfig,
 }

@@ -88,7 +88,7 @@ class SearchResourcesService:
         incident_id = request.args.get("incident-id")
 
         self.dal.create_resource_request(resource_id, incident_id)
-        return redirect(url_for("resource_status.resource_status"))
+        return redirect(url_for("resource_status.index"))
 
     def handle_resource_deploy(self):
         """
@@ -100,7 +100,7 @@ class SearchResourcesService:
         incident_id = request.args.get("incident-id")
 
         self.dal.create_resource_deploy(resource_id, incident_id)
-        return redirect(url_for("resource_status.resource_status"))
+        return redirect(url_for("resource_status.index"))
 
     def handle_resource_repair(self):
         """
@@ -111,4 +111,4 @@ class SearchResourcesService:
         resource_id = request.args.get("resource-id")
 
         self.dal.create_resource_repair(resource_id)
-        return redirect(url_for("resource_status.resource_status"))
+        return redirect(url_for("resource_status.index"))

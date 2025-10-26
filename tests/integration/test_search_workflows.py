@@ -4,12 +4,8 @@ Tests different search combinations and behaviors.
 """
 
 from tests.fixtures.helpers import (
-    create_test_cost_period,
-    create_test_esf,
     create_test_resource,
     create_test_user,
-    insert_cost_period_to_db,
-    insert_esf_to_db,
     insert_resource_to_db,
     insert_user_to_db,
 )
@@ -20,11 +16,8 @@ class TestSearchWorkflows:
 
     def test_search_by_esf_only(self, client, clean_db):
         """Test searching resources by ESF only."""
-        # Setup test data
+        # Setup test data - ESF and cost_period are pre-seeded
         user = create_test_user("searcher", "Resource Searcher", "password")
-        esf1 = create_test_esf(1, "Transportation")
-        esf2 = create_test_esf(2, "Communications")
-        cost_period = create_test_cost_period(1, "Per Hour")
         resource1 = create_test_resource(
             "1234567890", "searcher", "Ambulance", "Ford", "33.7490", "-84.3880", 1, "100.00", 1
         )
@@ -33,9 +26,6 @@ class TestSearchWorkflows:
         )
 
         insert_user_to_db(user)
-        insert_esf_to_db(esf1)
-        insert_esf_to_db(esf2)
-        insert_cost_period_to_db(cost_period)
         insert_resource_to_db(resource1)
         insert_resource_to_db(resource2)
 
@@ -43,7 +33,7 @@ class TestSearchWorkflows:
         client.post("/login", data={"username": "searcher", "password": "password"})
 
         # Search by ESF 1 only
-        response = client.post("/search-resources", data={"esf": "1"})
+        response = client.post("/search-resources/", data={"esf": "1"})
 
         assert response.status_code == 200
         assert "Ambulance" in response.get_data(as_text=True)
@@ -53,8 +43,6 @@ class TestSearchWorkflows:
         """Test searching resources by keyword only."""
         # Setup test data
         user = create_test_user("searcher", "Resource Searcher", "password")
-        esf = create_test_esf(1, "Transportation")
-        cost_period = create_test_cost_period(1, "Per Hour")
         resource1 = create_test_resource(
             "1234567890",
             "searcher",
@@ -71,8 +59,6 @@ class TestSearchWorkflows:
         )
 
         insert_user_to_db(user)
-        insert_esf_to_db(esf)
-        insert_cost_period_to_db(cost_period)
         insert_resource_to_db(resource1)
         insert_resource_to_db(resource2)
 
@@ -80,7 +66,7 @@ class TestSearchWorkflows:
         client.post("/login", data={"username": "searcher", "password": "password"})
 
         # Search by keyword 'Emergency'
-        response = client.post("/search-resources", data={"keyword": "Emergency"})
+        response = client.post("/search-resources/", data={"keyword": "Emergency"})
 
         assert response.status_code == 200
         assert "Emergency Ambulance" in response.get_data(as_text=True)
@@ -90,8 +76,6 @@ class TestSearchWorkflows:
         """Test searching resources by distance only."""
         # Setup test data
         user = create_test_user("searcher", "Resource Searcher", "password")
-        esf = create_test_esf(1, "Transportation")
-        cost_period = create_test_cost_period(1, "Per Hour")
         resource1 = create_test_resource(
             "1234567890",
             "searcher",
@@ -108,8 +92,6 @@ class TestSearchWorkflows:
         )
 
         insert_user_to_db(user)
-        insert_esf_to_db(esf)
-        insert_cost_period_to_db(cost_period)
         insert_resource_to_db(resource1)
         insert_resource_to_db(resource2)
 
@@ -117,7 +99,7 @@ class TestSearchWorkflows:
         client.post("/login", data={"username": "searcher", "password": "password"})
 
         # Search by distance (should find nearby resources)
-        response = client.post("/search-resources", data={"distance": "50"})
+        response = client.post("/search-resources/", data={"distance": "50"})
 
         assert response.status_code == 200
 
@@ -125,8 +107,6 @@ class TestSearchWorkflows:
         """Test searching with multiple filters combined."""
         # Setup test data
         user = create_test_user("searcher", "Resource Searcher", "password")
-        esf = create_test_esf(1, "Transportation")
-        cost_period = create_test_cost_period(1, "Per Hour")
         resource = create_test_resource(
             "1234567890",
             "searcher",
@@ -140,8 +120,6 @@ class TestSearchWorkflows:
         )
 
         insert_user_to_db(user)
-        insert_esf_to_db(esf)
-        insert_cost_period_to_db(cost_period)
         insert_resource_to_db(resource)
 
         # Login
@@ -149,7 +127,7 @@ class TestSearchWorkflows:
 
         # Search with ESF, keyword, and distance
         response = client.post(
-            "/search-resources", data={"esf": "1", "keyword": "Ford", "distance": "50"}
+            "/search-resources/", data={"esf": "1", "keyword": "Ford", "distance": "50"}
         )
 
         assert response.status_code == 200
@@ -157,36 +135,32 @@ class TestSearchWorkflows:
 
     def test_search_invalid_distance_format(self, client, clean_db):
         """Test search validation with invalid distance format."""
-        # Setup test data
+        # Setup test data - ESF is pre-seeded
         user = create_test_user("searcher", "Resource Searcher", "password")
-        esf = create_test_esf(1, "Transportation")
 
         insert_user_to_db(user)
-        insert_esf_to_db(esf)
 
         # Login
         client.post("/login", data={"username": "searcher", "password": "password"})
 
         # Search with invalid distance (non-numeric)
-        response = client.post("/search-resources", data={"distance": "abc"})
+        response = client.post("/search-resources/", data={"distance": "abc"})
 
         assert response.status_code == 200
         assert "Distance value must be positive number" in response.get_data(as_text=True)
 
     def test_search_empty_results(self, client, clean_db):
         """Test search with no matching results."""
-        # Setup test data
+        # Setup test data - ESF is pre-seeded
         user = create_test_user("searcher", "Resource Searcher", "password")
-        esf = create_test_esf(1, "Transportation")
 
         insert_user_to_db(user)
-        insert_esf_to_db(esf)
 
         # Login
         client.post("/login", data={"username": "searcher", "password": "password"})
 
         # Search for non-existent resource
-        response = client.post("/search-resources", data={"keyword": "NonExistentResource"})
+        response = client.post("/search-resources/", data={"keyword": "NonExistentResource"})
 
         assert response.status_code == 200
         # Should show search form with no results
@@ -202,7 +176,7 @@ class TestSearchWorkflows:
         client.post("/login", data={"username": "searcher", "password": "password"})
 
         # Cancel search
-        response = client.post("/search-resources", data={"cancel": "Cancel"})
+        response = client.post("/search-resources/", data={"cancel": "Cancel"})
 
         assert response.status_code == 302
         assert "/menu" in response.location

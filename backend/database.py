@@ -11,7 +11,15 @@ def connect_db() -> mysql.connector.MySQLConnection:
     :return: MySQL database connection
     """
     try:
-        config = Config.get_database_config()
+        # Use Flask app's configuration directly
+        config = {
+            "host": current_app.config["DB_HOST"],
+            "port": current_app.config["DB_PORT"],
+            "user": current_app.config["DB_USER"],
+            "password": current_app.config["DB_PASSWORD"],
+            "database": current_app.config["DB_NAME"],
+            "autocommit": False,
+        }
         return mysql.connector.connect(**config)
     except Exception as e:
         current_app.logger.error(f"Database connection error: {e}")

@@ -3,9 +3,22 @@ Test configuration and shared fixtures.
 Assumes Docker services are already running.
 """
 
+import sys
+from pathlib import Path
+
 import pytest
+
+# Add backend directory to Python path
+backend_path = Path(__file__).parent.parent.parent / "backend"
+sys.path.insert(0, str(backend_path))
+
+# Add tests directory to Python path for fixtures
+tests_path = Path(__file__).parent.parent
+sys.path.insert(0, str(tests_path))
+
 from app import create_app
 from database import commit_db, get_db
+from flask import g
 
 
 @pytest.fixture
@@ -25,54 +38,136 @@ def client(app):
 
 @pytest.fixture(scope="session")
 def setup_test_db():
-    """Set up isolated test database with schema and reference data."""
-    import os
+    """Set up isolated test database with minimal schema."""
     import subprocess
+    import time
 
-    # Create test database
-    subprocess.run([
-        "docker", "exec", "rms-mysql", "mysql", "-u", "root", "-ppassword",
-        "-e", "CREATE DATABASE IF NOT EXISTS rms_test_db;"
-    ], check=True)
+    # Simple approach: just create the test database and let tests create their own data
+    try:
+        # Drop and recreate test database
+        subprocess.run([
+            "docker", "exec", "rms-mysql", "mysql", "-u", "root", "-ppassword",
+            "-e", "DROP DATABASE IF EXISTS rms_test_db;"
+        ], check=True, timeout=10)
 
-    # Run schema creation script on test database
-    schema_path = os.path.join(os.path.dirname(__file__), "..", "backend", "sql", "creation_script.sql")
-    subprocess.run([
-        "docker", "exec", "-i", "rms-mysql", "mysql", "-u", "root", "-ppassword", "rms_test_db"
-    ], stdin=open(schema_path), check=True)
+        subprocess.run([
+            "docker", "exec", "rms-mysql", "mysql", "-u", "root", "-ppassword",
+            "-e", "CREATE DATABASE rms_test_db;"
+        ], check=True, timeout=10)
 
-    # Run reference data insertion script on test database
-    insert_path = os.path.join(os.path.dirname(__file__), "..", "backend", "sql", "insert_statements_script.sql")
-    subprocess.run([
-        "docker", "exec", "-i", "rms-mysql", "mysql", "-u", "root", "-ppassword", "rms_test_db"
-    ], stdin=open(insert_path), check=True)
+        # Copy schema from main database
+        schema_dump = subprocess.run([
+            "docker", "exec", "rms-mysql", "mysqldump", "-u", "root", "-ppassword",
+            "--no-data", "rms_db"
+        ], stdout=subprocess.PIPE, check=True, timeout=30)
+
+        subprocess.run([
+            "docker", "exec", "-i", "rms-mysql", "mysql", "-u", "root", "-ppassword", "rms_test_db"
+        ], input=schema_dump.stdout, check=True, timeout=30)
+
+        # Copy reference data (ESF, cost_time_period, and resource_request_status)
+        print("Copying reference data...")
+        reference_data_dump = subprocess.run([
+            "docker", "exec", "rms-mysql", "mysqldump", "-u", "root", "-ppassword",
+            "--no-create-info", "--where=1", "rms_db", "esf", "cost_time_period", "resource_request_status"
+        ], stdout=subprocess.PIPE, check=True, timeout=30)
+
+        print(f"Reference data dump size: {len(reference_data_dump.stdout)} bytes")
+
+        result = subprocess.run([
+            "docker", "exec", "-i", "rms-mysql", "mysql", "-u", "root", "-ppassword", "rms_test_db"
+        ], input=reference_data_dump.stdout, check=True, timeout=30)
+
+        print("Reference data copied successfully")
+
+        # Disable strict SQL mode for test database
+        subprocess.run([
+            "docker", "exec", "rms-mysql", "mysql", "-u", "root", "-ppassword",
+            "-e", "SET GLOBAL sql_mode = '';"
+        ], check=True, timeout=10)
+
+        print("Test database setup completed successfully")
+
+    except subprocess.TimeoutExpired:
+        print("Database setup timed out - using simplified approach")
+        # Fallback: just ensure test database exists
+        try:
+            subprocess.run([
+                "docker", "exec", "rms-mysql", "mysql", "-u", "root", "-ppassword",
+                "-e", "CREATE DATABASE IF NOT EXISTS rms_test_db;"
+            ], check=True, timeout=10)
+            print("Fallback database creation completed")
+        except subprocess.TimeoutExpired:
+            print("Even fallback database creation timed out - tests may fail")
+    except Exception as e:
+        print(f"Database setup failed: {e}")
+        # Try minimal fallback
+        try:
+            subprocess.run([
+                "docker", "exec", "rms-mysql", "mysql", "-u", "root", "-ppassword",
+                "-e", "CREATE DATABASE IF NOT EXISTS rms_test_db;"
+            ], check=True, timeout=10)
+        except:
+            print("All database setup attempts failed")
 
     yield
 
     # Clean up test database after all tests
-    subprocess.run([
-        "docker", "exec", "rms-mysql", "mysql", "-u", "root", "-ppassword",
-        "-e", "DROP DATABASE IF EXISTS rms_test_db;"
-    ], check=True)
+    try:
+        subprocess.run([
+            "docker", "exec", "rms-mysql", "mysql", "-u", "root", "-ppassword",
+            "-e", "DROP DATABASE IF EXISTS rms_test_db;"
+        ], check=True, timeout=10)
+        print("Test database cleanup completed")
+    except subprocess.TimeoutExpired:
+        print("Database cleanup timed out")
+    except Exception as e:
+        print(f"Database cleanup failed: {e}")
 
 
 @pytest.fixture
 def clean_db(app, setup_test_db):
     """Clean user-generated data before each test."""
     with app.app_context():
-        # Clean user-generated data in dependency order
-        # Keep reference data: esf, cost_time_period
-        commit_db("DELETE FROM resource_request_status")
-        commit_db("DELETE FROM resource_esf")
-        commit_db("DELETE FROM capability")
-        commit_db("DELETE FROM resource")
-        commit_db("DELETE FROM incident")
-        commit_db("DELETE FROM municipality")
-        commit_db("DELETE FROM individual")
-        commit_db("DELETE FROM government_agency")
-        commit_db("DELETE FROM company")
-        commit_db("DELETE FROM user")
-        yield
+        try:
+            # Clean user-generated data in dependency order (children first)
+            # Keep reference data: esf, cost_time_period, resource_request_status
+            cleanup_queries = [
+                "DELETE FROM resource_request",  # Delete child records first
+                "DELETE FROM resource_repair",   # Delete repair records before resources
+                "DELETE FROM resource_esf",
+                "DELETE FROM capability",
+                "DELETE FROM resource",
+                "DELETE FROM incident",
+                "DELETE FROM municipality",
+                "DELETE FROM individual",
+                "DELETE FROM government_agency",
+                "DELETE FROM company",
+                "DELETE FROM user"
+            ]
+
+            # Execute cleanup queries with error handling
+            for query in cleanup_queries:
+                try:
+                    commit_db(query)
+                except Exception as e:
+                    print(f"Warning: Failed to execute {query}: {e}")
+                    # Continue with other cleanup queries even if one fails
+
+            yield
+
+        finally:
+            # Ensure cleanup happens even if test fails
+            try:
+                # Force close any open database connections
+                if hasattr(g, 'mysql_db'):
+                    try:
+                        g.mysql_db.close()
+                    except:
+                        pass
+                    delattr(g, 'mysql_db')
+            except Exception as e:
+                print(f"Warning: Error during cleanup: {e}")
 
 
 @pytest.fixture

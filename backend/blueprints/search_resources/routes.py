@@ -10,19 +10,19 @@ def index():
     return service.handle_search_resources_request()
 
 
-@search_resources_bp.route("/search-resources/request/", methods=["GET"])
+@search_resources_bp.route("/request/", methods=["GET"])
 def search_results_resource_request():
     service = SearchResourcesService()
     return service.handle_resource_request()
 
 
-@search_resources_bp.route("/search-resources/repair/", methods=["GET"])
+@search_resources_bp.route("/repair/", methods=["GET"])
 def search_results_resource_repair():
     service = SearchResourcesService()
     return service.handle_resource_repair()
 
 
-@search_resources_bp.route("/search-resources/deploy/", methods=["GET"])
+@search_resources_bp.route("/deploy/", methods=["GET"])
 def search_results_resource_deploy():
     service = SearchResourcesService()
     return service.handle_resource_deploy()

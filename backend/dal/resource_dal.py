@@ -35,7 +35,7 @@ class ResourceDAL:
         sql = template.safe_substitute(
             {
                 "username": username,
-                "guid": resource_id,
+                "guid": str(resource_id).zfill(10),  # Convert to string and pad to 10 digits
                 "resource_name": name,
                 "model": model,
                 "lat": lat,

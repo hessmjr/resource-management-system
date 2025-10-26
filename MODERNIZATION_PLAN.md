@@ -89,6 +89,9 @@ Local development example project with modern best practices, not production dep
 - [x] Basic test coverage (✅ CONFIGURED IN pyproject.toml)
 - [x] Pre-commit hooks (✅ .pre-commit-config.yaml exists)
 - [x] Documentation updates (✅ README MODERNIZED)
+- [ ] Cleanup comments
+- [ ] Cleanup useless/unnecessary code
+- [ ] Cleanup config setup
 
 ## Quick Start Commands
 ```bash
