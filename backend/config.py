@@ -1,9 +1,8 @@
 import os
-from typing import Any
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
+    SECRET_KEY = os.environ.get("SECRET_KEY") or os.urandom(24).hex()
 
     # Database configuration
     DB_HOST = os.environ.get("DB_HOST", "localhost")
