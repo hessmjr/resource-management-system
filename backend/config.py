@@ -1,9 +1,8 @@
 import os
-from typing import Any
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
+    SECRET_KEY = os.environ.get("SECRET_KEY") or os.urandom(24).hex()
 
     # Database configuration
     DB_HOST = os.environ.get("DB_HOST", "localhost")
@@ -19,7 +18,9 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SECRET_KEY = os.urandom(24)
+    # Use consistent secret key in development to persist sessions across restarts
+    # Override with SECRET_KEY environment variable if needed
+    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
 
 
 class TestingConfig(Config):

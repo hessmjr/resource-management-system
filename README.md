@@ -32,7 +32,7 @@ docker exec -it rms-mysql mysql -u root -p
 
 ## Development
 
-Tools and commands for maintaining code quality and running tests.  Tools can be excuted a couple different ways
+Tools and commands for maintaining code quality and running tests.  Tools can be executed a couple different ways
 
 ```bash
 # Method 1: Traditional approach (after running uv sync)
