@@ -19,7 +19,9 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SECRET_KEY = os.urandom(24)
+    # Use consistent secret key in development to persist sessions across restarts
+    # Override with SECRET_KEY environment variable if needed
+    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
 
 
 class TestingConfig(Config):
